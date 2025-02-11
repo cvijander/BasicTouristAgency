@@ -1,0 +1,90 @@
+﻿@model BasicTouristAgency.Models.Vacation
+
+@using Microsoft.AspNetCore.Identity;
+@using BasicTouristAgency.Models;
+
+@inject SignInManager<User> SignInManager;
+@inject UserManager<User> UserManager;
+
+@{
+    var cardClass = Model?.Type switch
+    {
+        Vacation.VacationType.Summer => "summer",
+        Vacation.VacationType.Winter => "winter",
+        Vacation.VacationType.EuropeanCities => "europeanCities",
+        Vacation.VacationType.NewYear => "newYear",
+        Vacation.VacationType.Cruser => "cruser",
+        Vacation.VacationType.FarDestinations => "farDestinations",
+        Vacation.VacationType.LastMinute => "lastMinute",
+        Vacation.VacationType.SpecialOffers => "specialOffers",
+        Vacation.VacationType.Wellness => "wellness" 
+    };
+}
+
+
+<head>
+    <link rel="stylesheet" href="~/css/VacationCard.css" />
+    @{
+        ViewData["Title"] = $"{Model.VacationName}  info";
+    }      
+</head>
+    
+
+<div class="vacation-info @cardClass">
+    <div class="row">
+        <div class="col-md-10">
+            <h2 class="text-white text-uppercase"><strong>Name: </strong> @Model.VacationName</h2>
+            @if (ViewData.ContainsKey("ShowVacationId") && (bool)ViewData["ShowVacationId"])
+            {
+                <h3 class="text-white"><strong>Id: </strong> @Model.VacationId</h3>
+            }
+            <p class="text-white"><strong class="text-white">Description: </strong> @Model.VacationDescription</p>
+            <p class="text-white"><strong class="text-white">Start date: </strong> @Model.StartDate.ToShortDateString()</p>
+            <p class="text-white"><strong class="text-white">Ends date: </strong> @Model.EndDate.ToShortDateString()</p>
+            <p class="text-white"><strong class="text-white">Price:</strong> @Model.Price.ToString("C")</p>
+            <p class="text-white"><strong class="text-white">Type: </strong> @BasicTouristAgency.Util.Helpers.EnumHelper.GetDisplayName(Model.Type)</p>
+        </div>
+        <div class="col-12 col-md-2">
+            <div class="button-display-vacation">
+                @if(SignInManager.IsSignedIn(User))
+                {
+                    var user = await UserManager.GetUserAsync(User);
+                    var roles = await UserManager.GetRolesAsync(user);
+
+                    if(roles.Contains("Admin"))
+                    {
+                        @if (ViewData.ContainsKey("ShowEditLink") && (bool)ViewData["ShowEditLink"])
+                        {
+                            <a href="@Url.Action("Edit","Vacation", new {id = Model.VacationId })" class="btn btn-primary">Edit</a>
+                        }
+                        @if (ViewData.ContainsKey("ShowDeleteLink") && (bool)ViewData["ShowDeleteLink"])
+                        {
+                            <a href="@Url.Action("Delete","Vacation", new {id = Model.VacationId })" class="btn btn-danger">Delete</a>
+                        }
+                    }
+                    else if (roles.Contains("User"))
+                    {
+                        @if (ViewData.ContainsKey("ShowReservationLink") && (bool)ViewData["ShowReservationLink"])
+                        {
+                                <a href="@Url.Action("MakeAReservation","Reservation")" class="btn btn-success">Make a reservation</a>
+                        }
+                    }
+               }
+               else
+               {
+                        <p class="text-danger">You must be logged in to perform actions.</p>
+                       <a href="@Url.Page("/Account/Login", new { area = "Identity" })" class="btn btn-warning">Login</a>
+                      
+               }
+               
+                   
+                </div>
+            </div>
+        </<div>
+    </div>
+       
+</div>
+   
+
+
+

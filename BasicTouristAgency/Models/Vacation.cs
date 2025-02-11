@@ -15,16 +15,20 @@ namespace BasicTouristAgency.Models
         public string VacationDescription { get; set; }
 
         [Required]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime StartDate { get; set; }
 
         [Required]
-       
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime EndDate { get; set; }
 
         [Required]
         [Range(0.01, double.MaxValue)]
         public decimal Price { get; set; }
 
+        [Required(ErrorMessage = "Please select a vacation type.")]
         public VacationType Type { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
@@ -49,7 +53,8 @@ namespace BasicTouristAgency.Models
             Cruser,
             FarDestinations,
             LastMinute,
-            SpecialOffers
+            SpecialOffers,
+            Wellness
         }
     }
 }

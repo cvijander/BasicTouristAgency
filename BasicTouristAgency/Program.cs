@@ -3,7 +3,10 @@ using BasicTouristAgency.Models;
 using BasicTouristAgency.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,14 +25,33 @@ builder.Services.AddIdentity<User,IdentityRole>()
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Identity/Account/Login";  // 
+    options.LoginPath = "/Identity/Account/Login";  // Redirect unathenticaddete users here
     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
 });
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
-//builder.Services.AddTransient<IEmailSender,IEmailSender>();
+builder.Services.AddTransient<IEmailSender,EmailSender>();
+
+builder.Services.AddLocalization(options => options.ResourcesPath= "Resources");
+var supportedCultures = new[]
+{
+    new CultureInfo("en"),
+    new CultureInfo("es"),
+    new CultureInfo("sr-Latn-RS")
+};
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.DefaultRequestCulture = new RequestCulture("en");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+});
+
+builder.Services.AddControllersWithViews()
+    .AddViewLocalization()
+    .AddDataAnnotationsLocalization();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
@@ -37,6 +59,15 @@ builder.Services.AddScoped<IVacationService, VacationService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
+
+app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await SeedRolesAndAdminAsync(services);
+
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -64,3 +95,32 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+
+async Task SeedRolesAndAdminAsync(IServiceProvider services)
+{
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = services.GetRequiredService<UserManager<User>>();
+
+    // add admin and user roles 
+    if (!await roleManager.RoleExistsAsync("Admin"))
+    {
+        await roleManager.CreateAsync(new IdentityRole("Admin"));
+    }
+    if (!await roleManager.RoleExistsAsync("User"))
+    {
+        await roleManager.CreateAsync(new IdentityRole("User"));
+    }
+
+    // super user
+    string adminMail = "admin@admin.com";
+    string adminPass = "Something@123$";
+
+    var adminUser = new User() { Email = adminMail, UserName = adminMail };
+    var result = await userManager.CreateAsync(adminUser, adminPass);
+
+    if (result.Succeeded)
+    {
+        await userManager.AddToRoleAsync(adminUser, "Admin");
+    }
+}

@@ -1,0 +1,55 @@
+﻿@model BasicTouristAgency.ViewModel.PaginationViewModel<Vacation>
+
+    @{
+        ViewData["Title"] = "Show all vacations";
+    }
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-success">
+        @ViewBag.Message
+    </div>
+}
+
+
+    <form asp-action="Index" asp-controller="Vacation" method="get">
+        <div class="form-group">
+            <label for="minPrice" class="form-label">Min price: </label>
+            <input type="number" class="form-control" name="minPrice" id="minPrice" value="@Context.Request.Query["minPrice"]" min="0" step="1" placeholder="Please enter minimal price (lower limit)"/>
+
+            <label for="maxPrice" class="form-label">Max price: </label>
+            <input type="number" class="form-control" name="maxPrice" id="maxPrice" value="@Context.Request.Query["maxPrice"]" min="0" step="1" placeholder="Please enter maximal price (upper limit)" />
+
+            <label for="vacationName" class="form-label">Name:</label>
+            <input type="text" class="form-control" name="vacationName" id="vacationName" value="@Context.Request.Query["vacationName"]" placeholder="Enter name" />
+
+            <label for="startDate" class="form-label">Start Date:</label>
+            <input type="date" class="form-control" name="startDate" id="startDate" value="@Context.Request.Query["startDate"]" />
+
+            <label for="endDate" class="form-label">End Date:</label>
+            <input type="date" class="form-control" name="endDate" id="endDate" value="@Context.Request.Query["endDate"]" />
+
+             
+            <label for="vacType" class="form-label">Vacation type: </label>
+            <select class="form-control" name="vacType" id="vacType">
+                <option value="">--Select type --</option>
+                    @foreach(var type in (List<SelectListItem>)ViewBag.VacationTypes)
+                        {
+                           <option value="@type.Value" selected="@(Context.Request.Query["vacType"].ToString() == type.Value ? "selected" : null)">@type.Text</option>
+                        }
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>        
+        <a href="@Url.Action("Index","Vacation")" class="btn btn-secondary">Clear all filters</a>
+    </form>
+
+    <div class="vacation-list">
+        @foreach(Vacation singleVacation in Model.Collection)
+    {
+        <div class="vacation-solo">
+            @await Html.PartialAsync("_VacationAdminCard", singleVacation, new ViewDataDictionary(ViewData) { { "ShowVacationId", true }, { "ShowEditLink", true }, { "ShowDeleteLink", true }, {"ShowReservationLink" ,true} })
+        </div>
+
+    }
+    </div>
+
+    @await Html.PartialAsync("_PaginationVacation", Model)

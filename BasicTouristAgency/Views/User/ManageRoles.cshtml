@@ -1,0 +1,49 @@
+﻿@model IEnumerable<BasicTouristAgency.ViewModel.UsersRoles>
+
+@{
+    ViewData["Title"] = "Manage User Roles";
+}
+
+<h2>Manage User Roles</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Email</th>
+            <th>Current Role</th>
+            <th>Change Role</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.UserName</td>
+                <td>@user.Email</td>
+                <td>@user.SelectedRole</td>
+                <td>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <form asp-action="UpdateUserRole" method="post">
+                            <input type="hidden" name="SelectedUser" value="@user.SelectedUser" />
+                            <select name="SelectedRole" class="form-control">
+                                @foreach (var role in user.Roles)
+                                {
+                                    <option value="@role.Name">@role.Name</option>
+                                }
+                            </select>
+                            <button type="submit" class="btn btn-primary mt-2">Update</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <p><strong> You do not have permission to change roles.</strong></p>
+                    }
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

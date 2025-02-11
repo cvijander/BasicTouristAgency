@@ -25,9 +25,16 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Vacation" asp-action="Create">Create a vacation</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Vacation" asp-action="Index">Show all vacations</a>
+                        </li>
                     </ul>
                     @if(User.Identity.IsAuthenticated)
                     {
+                        <a href="@Url.Action("Profile","User")" class="btn btn-link nav-link">Profile</a>
                         <form method="post" asp-area="Identity" asp-page="/Account/Logout">
                             <button type="submit" class="btn btn-link nav-link">Logout</button>
                         </form>
@@ -36,6 +43,12 @@
                     {
                         <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
                         <a class="nav-link text-dark" asp-area ="Identity" asp-page="/Account/Register">Register</a>
+                    }
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="User" asp-action="ManageRoles">Manage roles</a>
+                        </li>
                     }
                 </div>
             </div>

@@ -1,0 +1,37 @@
+﻿@model BasicTouristAgency.ViewModel.UsersRoles
+
+@{
+    ViewData["Title"] = "Profile";
+}
+
+
+<div class="user-card">
+    <p>Hello @Model.UserName</p>
+    <p>You email is @Model.Email</p>
+</div>
+
+@if(User.IsInRole("Admin"))
+{
+    <form asp-action="Profile" method="post">
+        <select asp-for="SelectedRole">
+            @foreach (var role in Model.Roles)
+            {
+                <option value="@role.Name">@role.Name</option>
+            }
+        </select>
+
+        <select asp-for="SelectedUser">
+            @foreach (var user in Model.Users)
+            {
+                <option value="@user.Id">@user.UserName </option>
+            }
+
+
+        </select>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+}
+else
+{
+    <p><strong>Yoo do not have permision to change roles.</strong></p>
+}

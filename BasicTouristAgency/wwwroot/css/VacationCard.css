@@ -1,0 +1,204 @@
+﻿body {
+    background-color: #f8f9fa;
+    font-family: Arial, sans-serif;
+}
+
+.vacation-info {
+    background-color: #e9ecef;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    position: relative;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    color: white;
+}
+.vacation-info::before {
+     content: '';
+     position: absolute;
+     top: 0;
+     left: 0;
+     right: 0;
+     bottom: 0;
+     background: rgba(0, 0, 0, 0.4); 
+     z-index: 1;
+}
+
+.vacation-info > * {
+     position: relative;
+     z-index: 2; 
+}
+.vacation-info h3 {
+    font-size: 1.2rem;
+    color: #343a40;
+    margin-bottom: 10px;
+}
+
+.vacation-info p {
+   font-size: 1rem;
+   margin: 5px 0;
+   color: #495057;
+}
+
+.vacation-info p strong {
+   font-weight: bold;
+   color: #343a40;
+}
+
+.vacation-info h2, .vacation-info h3 {
+   margin: 5px 0;
+   color: #495057;
+}
+
+.text-white {
+    color: white;
+}
+
+.text-uppercase {
+    text-transform: uppercase;
+}
+
+
+
+
+.summer {
+    background-image: url('/images/background-images/summer.jpg');
+    background-size: cover;
+    border: 5px solid #FFD700;
+    border-radius:10px;
+    color:white;
+}
+
+.winter {
+    background-image: url('/images/background-images/winter.jpg');
+    background-size: cover;
+    border: 5px solid #ADD8E6;
+    border-radius : 10px;
+    color:white;
+}
+
+.europeanCities {
+    background-image: url('/images/background-images/europeancitites.jpg');
+    background-size: cover;
+    border: 5px solid #8B0000;
+    border-radius : 10px;
+    color: white;
+}
+
+.newYear {
+    background-image: url('/images/background-images/newyear.jpg');
+    background-size: cover;
+    border: 5px solid #800080;
+    border-radius: 10px;
+    color : white;
+}
+
+.cruser {
+    background-image: url('/images/background-images/cruiser.jpg');
+    background-size: cover;
+    border: 5px solid #4682B4;
+    border-radius: 10px;
+    color:white;
+
+}
+
+.farDestinations {
+    background-image: url('/images/background-images/fardestinations.jpg');
+    background-size: cover;
+    border: 5px solid #FF6347;
+    border-radius: 10px;
+    color:white;
+}
+
+.lastMinute {
+    background-image: url('/images/background-images/lastminute.jpg');
+    background-size: cover;
+    border: 5px solid #FFA07A;
+    border-radius: 10px;
+    color: white;
+}
+
+.specialOffers {
+    background-image: url('/images/background-images/specialoffers.jpg');
+    background-size: cover;
+    border: 5px solid #32Cd32;
+    border-radius: 10px;
+    color: white;
+}
+
+.wellness {
+    background-image: url('/images/background-images/wellness.jpg');
+    background-size: cover;
+    border: 5px solid #98FB98;
+    border-radius: 10px;
+    color: white;
+}
+
+.card-img-top {
+    max-height: 200px;
+    object-fit: cover;
+    width: 100%;
+}
+.card-dodato {
+    max-width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.button-display-vacation {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+    margin-top: 50px;
+    margin-right: 30px;
+    padding: 10px;
+    font-weight: 600;
+    font-size: larger;
+}
+
+.btn {
+    min-width: 120px;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.vacation-info .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(220,53,69, 0.5);
+    transition: transform 0.2s , box-shadow 0.2s;
+}
+
+.vacation-info .btn-danger:hover {
+    background-color: #a71d2a;
+    transform: scale(1.05);
+    box-shadow: 0 6px 8px rgba(220,53,69,0.8);
+}
+
+.vacation-info .btn-primary:hover {
+    background-color: #0056b3; 
+    transform: scale(1.03);
+}
+
+.vacation-info .btn-success:hover {
+    background-color: #218838; 
+    transform: scale(1.03);
+}
+
+.vacation-info .button-display-vacation {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch; 
+    margin-top: 10px;
+}

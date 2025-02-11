@@ -17,6 +17,7 @@ namespace BasicTouristAgency.Models
         public Vacation Vacation { get; set; }
 
         [Required]
+        [DataType(DataType.Date)]
         public DateTime DateCreatedReservation { get; set; }
 
         [Required]
@@ -34,6 +35,7 @@ namespace BasicTouristAgency.Models
 
         public enum ReservationStatus
         {
+            Created,
             Confirmed, 
             Canceled,
             OnHold,
