@@ -28,7 +28,7 @@ namespace BasicTouristAgency.Services
             }
         }
 
-        public IEnumerable<Vacation> GetAllFilteredVacation(int? minPrice, int? maxPrice, string vacationName, DateTime? startDate, DateTime? endDate, Vacation.VacationType? vacType)
+        public IEnumerable<Vacation> GetAllFilteredVacation(int? minPrice, int? maxPrice, string vacationName, DateTime? startDate, DateTime? endDate, Vacation.VacationType? vacType, string sortBy = "StartDate", bool descending = false)
 
         {
             var vacations = _dbContext.Vacations.AsQueryable();
@@ -44,7 +44,7 @@ namespace BasicTouristAgency.Services
 
             if (!string.IsNullOrEmpty(vacationName))
             {
-                vacations = vacations.Where(v => v.VacationName.ToLower().Trim() == vacationName.ToLower().Trim());
+                vacations = vacations.Where(v => v.VacationName.ToLower().Trim().Contains(vacationName.ToLower().Trim()));
             }
 
             if (startDate.HasValue)
@@ -61,8 +61,61 @@ namespace BasicTouristAgency.Services
             {
                 vacations = vacations.Where(v => v.Type == vacType.Value);
             }
+            // sortiranje 
 
+            switch(sortBy)
+            {
+                case "Price":
+                    {
+                        vacations = descending ? vacations.OrderByDescending(v => v.Price) : vacations.OrderBy(v => v.Price);
+                    }
+                    break;
+
+                case "EndDate":
+                    {
+                        vacations = descending ? vacations.OrderByDescending(v => v.EndDate) : vacations.OrderBy(v => v.EndDate);
+                    }
+                    break;
+
+                default:
+                    {
+                        vacations = descending ? vacations.OrderByDescending(v => v.StartDate) : vacations.OrderBy(v => v.StartDate);
+                    }
+                    break;
+
+            }
+
+            //if(minPrice.HasValue && !maxPrice.HasValue)
+            //{
+            //    vacations = vacations.OrderBy(v => v.Price);
+            //}
+
+            //if (!minPrice.HasValue && maxPrice.HasValue)
+            //{
+            //    vacations = vacations.OrderByDescending(v => v.Price);
+            //}
+
+            //if (minPrice.HasValue && maxPrice.HasValue)
+            //{
+            //    vacations = vacations.OrderBy(v => v.Price);
+            //}
+
+            //if (startDate.HasValue && !endDate.HasValue)
+            //{
+            //    vacations = vacations.OrderBy(v => v.StartDate);
+            //}
+
+            //if (!startDate.HasValue && endDate.HasValue)
+            //{
+            //    vacations = vacations.OrderByDescending(v => v.EndDate);
+            //}
+
+            //if (startDate.HasValue && endDate.HasValue)
+            //{
+            //    vacations = vacations.OrderBy(v => v.StartDate);
+            //}
             return vacations.ToList();
+                        
         }
 
       

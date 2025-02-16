@@ -20,11 +20,18 @@ namespace BasicTouristAgency.Controllers
 
         public IActionResult Profile()
         {
+            var user = _userManager.GetUserAsync(User).Result;
+
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             IEnumerable<User> users = _userManager.Users.ToList();
 
             IEnumerable<IdentityRole> roles = _roleManager.Roles.ToList();
 
-            var user = _userManager.GetUserAsync(User).Result;
+           
 
             UsersRoles ur = new UsersRoles();
             ur.Roles = roles;
@@ -61,23 +68,37 @@ namespace BasicTouristAgency.Controllers
             }
 
             var currentRoles = await _userManager.GetRolesAsync(user);
-            foreach (var role in currentRoles)
+            if(currentRoles.Any())
             {
-                await _userManager.RemoveFromRoleAsync(user, role);
+                foreach (var role in currentRoles)
+                {
+                    await _userManager.RemoveFromRoleAsync(user, role);
 
+                }
             }
-
-
-            var result = await _userManager.AddToRoleAsync(user, usersRoles.SelectedRole);
-
-            if (result.Succeeded)
+           
+            if(!await _userManager.IsInRoleAsync(user,usersRoles.SelectedRole))
             {
-                TempData["Success"] = "Role updated succesfully";
+                var result = await _userManager.AddToRoleAsync(user, usersRoles.SelectedRole);
+
+                if (result.Succeeded)
+                {
+                    TempData["Success"] = "Role updated succesfully";
+                }
+                else
+                {
+                    TempData["Error"] = "Failed to update role";
+                }
             }
+           
+
             else
             {
-                TempData["Error"] = "Failed to update role";
+                TempData["Error"] = "User already has this role";
+                return RedirectToAction("Profile");
             }
+
+           
             return RedirectToAction("Profile");
         }
 

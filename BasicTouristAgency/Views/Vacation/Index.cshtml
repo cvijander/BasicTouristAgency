@@ -10,6 +10,13 @@
     </div>
 }
 
+@if(TempData["Message"] != null )
+{
+    <div class=" alert  alert-success">
+        @TempData["Message"]
+    </div>
+}
+
 
     <form asp-action="Index" asp-controller="Vacation" method="get">
         <div class="form-group">
@@ -37,6 +44,17 @@
                            <option value="@type.Value" selected="@(Context.Request.Query["vacType"].ToString() == type.Value ? "selected" : null)">@type.Text</option>
                         }
             </select>
+
+            <label for="sortBy" class="form-label">Sort by</label>
+            <select class="form-control" name="sortBy" id="sortBy">
+                <option value="StartDate" selected="@(Context.Request.Query["sortBy"] == "StartDate" ? "selected": null )">Start Date</option>
+                <option value="EndDate" selected ="@(Context.Request.Query["sortBy"] == "EndDate" ? "selected" : null )">End Date</option>
+                <option value="Price" selected ="@(Context.Request.Query["sortBy"] == "Price" ? "selected" : null)">Price</option>
+            </select>
+
+            <label class="form-check-label">
+                <input type="checkbox" name="descending" value="true" class="form-check-input" @(Context.Request.Query["secending"] == "true" ? "checked": "") />Descending order
+            </label>
         </div>
         <button type="submit" class="btn btn-primary">Search</button>        
         <a href="@Url.Action("Index","Vacation")" class="btn btn-secondary">Clear all filters</a>

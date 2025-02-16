@@ -17,8 +17,8 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="navbar-collapse collapse">
+                    <ul class="navbar-nav me-auto">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
@@ -34,22 +34,43 @@
                     </ul>
                     @if(User.Identity.IsAuthenticated)
                     {
-                        <a href="@Url.Action("Profile","User")" class="btn btn-link nav-link">Profile</a>
-                        <form method="post" asp-area="Identity" asp-page="/Account/Logout">
-                            <button type="submit" class="btn btn-link nav-link">Logout</button>
-                        </form>
+                        <ul class="navbar-nav ms-auto align-items-center">
+                            <li class="nav-item">
+                                <span class="nav-link">Welcome , @User.Identity.Name</span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Profile","User")">Profile</a>
+                            </li>
+                            <li class="nav-item">
+                                <form method="post" asp-area="Identity" asp-page="/Account/Logout">
+                                    <button type="submit" class="btn btn-link nav-link">Logout</button>
+                                </form>                                
+                            </li>
+
+                            @if(User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="User" asp-action="ManageRoles">Manager roles</a>
+                                </li>
+                            }
+
+                        </ul>                      
+                       
+                        
                     }
                     else
                     {
-                        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
-                        <a class="nav-link text-dark" asp-area ="Identity" asp-page="/Account/Register">Register</a>
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a> 
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
+                            </li>
+                        </ul>
+                        
                     }
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="User" asp-action="ManageRoles">Manage roles</a>
-                        </li>
-                    }
+                    
                 </div>
             </div>
         </nav>

@@ -136,6 +136,14 @@
     color: white;
 }
 
+.mountains {
+    background-image: url('/images/background-images/mountains.jpg');
+    background-size: cover;
+    border: 5px solid #98FB98;
+    border-radius: 10px;
+    color: white;
+}
+
 .card-img-top {
     max-height: 200px;
     object-fit: cover;

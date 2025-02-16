@@ -27,12 +27,12 @@ namespace BasicTouristAgency.Controllers
 
 
         [HttpGet]
-        public IActionResult Index(string message,int? minPrice, int? maxPrice, string vacationName, DateTime? startDate, DateTime? endDate, Vacation.VacationType? vacType,int page = 1)
+        public IActionResult Index(string message,int? minPrice, int? maxPrice, string vacationName, DateTime? startDate, DateTime? endDate, Vacation.VacationType? vacType, string sortBy = "StartDate", bool descending = false, int page = 1)
         {
             ViewBag.Message = message;
             ViewBag.VacationTypes = _unitOfWork.VacationService.GetVacationTypes();
 
-            var vacations = _unitOfWork.VacationService.GetAllFilteredVacation(minPrice, maxPrice, vacationName, startDate, endDate, vacType);
+            var vacations = _unitOfWork.VacationService.GetAllFilteredVacation(minPrice, maxPrice, vacationName, startDate, endDate, vacType, sortBy, descending);
 
 
 
@@ -67,12 +67,13 @@ namespace BasicTouristAgency.Controllers
         }
 
         [HttpPost]
-       // [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create(Vacation vacation)
         { 
             
             if(!ModelState.IsValid)
             {
+                ViewBag.VacationTypes = _unitOfWork.VacationService.GetVacationTypes();
                 return View("Create",vacation);
             }
 
@@ -93,7 +94,7 @@ namespace BasicTouristAgency.Controllers
             
         }
         
-       // [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult Edit(int id)
         {
@@ -117,7 +118,7 @@ namespace BasicTouristAgency.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Vacation vacation)
         {
@@ -130,8 +131,25 @@ namespace BasicTouristAgency.Controllers
 
             try
             {
+                bool wasConvertedToLastMinute = false;
+
+                if(vacation.Type != Vacation.VacationType.LastMinute && vacation.StartDate <= DateTime.Now.AddDays(10).Date)
+                {
+                    vacation.Type = Vacation.VacationType.LastMinute;
+                    wasConvertedToLastMinute = true;
+                }
+
                 _unitOfWork.VacationService.UpdateVacation(vacation);
                 _unitOfWork.SaveChanges();
+
+                if(wasConvertedToLastMinute)
+                {
+                    TempData["Message"] = "Your vacatin package was converted to a Last minute";
+                }
+                else
+                {
+                    TempData["Message"] = "Vacation detials succesfully updated";
+                }
 
                 return RedirectToAction("Index" , new { message = "Vacation sucesfully updated"});
             }
