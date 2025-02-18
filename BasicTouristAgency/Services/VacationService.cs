@@ -56,8 +56,12 @@ namespace BasicTouristAgency.Services
             {
                 vacations = vacations.Where(v => v.EndDate <= endDate.Value);
             }
+            if (endDate == null) 
+            {
+                vacations = vacations.Where(v => v.EndDate >= DateTime.Now);
+            }
 
-            if(vacType.HasValue)
+            if (vacType.HasValue)
             {
                 vacations = vacations.Where(v => v.Type == vacType.Value);
             }

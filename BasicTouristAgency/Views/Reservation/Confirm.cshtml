@@ -1,0 +1,28 @@
+﻿@model BasicTouristAgency.Models.Reservation
+
+@{
+    ViewData["Title"] = "Reservation confiramation";
+}
+
+<h2>Reservation confirmation</h2>
+
+<p>Dear @User.Identity.Name, your reservation has been succesfully created</p>
+
+@if (Model.Vacation != null)
+{
+    <div class="vacation-solo">
+        @await Html.PartialAsync("_VacationAdminCard", Model.Vacation, new ViewDataDictionary(ViewData) { { "ShowVacationId", false }, { "ShowEditLink", false }, { "ShowDeleteLink", false } })
+    </div>
+}
+else
+{
+    <p class="text-danger">Vacation details are missing</p>
+}
+
+<div>
+    <h3><strong>Date reservation created: </strong> @Model.DateCreatedReservation.ToShortDateString()</h3>
+    <h3><strong>Reservation status </strong> @Model.Status</h3>
+</div>
+
+<a href="@Url.Action("Index", "Vacation")" class="btn btn-primary">Back to offers</a>
+<a href="@Url.Action("MyReservation", "Reservation", new {id = @Model.UserId})" class="btn btn-success">View my reservation</a> 

@@ -13,5 +13,7 @@ namespace BasicTouristAgency.Services
         void UpdateReservation (Reservation reservation);
 
         void DeleteReservation (int id);
+
+        Reservation GetReservationByVacationId(int vacationId);
     }
 }

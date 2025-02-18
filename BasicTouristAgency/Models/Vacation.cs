@@ -31,6 +31,23 @@ namespace BasicTouristAgency.Models
         [Required(ErrorMessage = "Please select a vacation type.")]
         public VacationType Type { get; set; }
 
+
+        public bool IsExpired()
+        {
+            return EndDate < DateTime.Today;
+        }
+
+        public bool HasStarted()
+        {
+            return StartDate <= DateTime.Today;
+        }
+
+        public bool IsAvailableForReservation()
+        {
+            return !IsExpired() && !HasStarted();
+        }
+
+
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if(EndDate < StartDate)
@@ -81,7 +98,7 @@ namespace BasicTouristAgency.Models
                     break;
 
                 case Vacation.VacationType.Winter:
-                    if(startMonth < 11 && startMonth > 3)
+                    if(!(startMonth >= 11 || startMonth <= 3))
                     {
                         yield return new ValidationResult("Winter vacation can only start only in novbmer or december, and end in mart or april", new[] { nameof(StartDate) });
 
@@ -115,7 +132,7 @@ namespace BasicTouristAgency.Models
 
                 case Vacation.VacationType.FarDestinations:
                     {
-                        if((EndDate -StartDate).TotalDays > 10)
+                        if((EndDate -StartDate).TotalDays < 10)
                         {
                             yield return new ValidationResult("Far destinations vacation must be at least 10 days", new[] { nameof(EndDate) });
                         }

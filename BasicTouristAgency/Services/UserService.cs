@@ -36,9 +36,9 @@ namespace BasicTouristAgency.Services
             return _dbContext.Users.FirstOrDefault(u => u.Email == email);
         }
 
-        public User GetUserById(int id)
+        public User GetUserById(string userId)
         {
-            return _dbContext.Users.Find(id);
+            return _dbContext.Users.FirstOrDefault(u => u.Id == userId);
         }
 
         public void UpdateUser(User user)

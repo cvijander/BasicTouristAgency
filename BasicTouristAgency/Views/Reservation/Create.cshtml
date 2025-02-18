@@ -1,0 +1,57 @@
+﻿@model BasicTouristAgency.Models.Reservation
+
+@{
+    ViewData["Title"] = "Make a reservation";
+}
+
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-success">
+        @ViewBag.Message
+    </div>
+}
+
+@if (TempData["Message"] != null)
+{
+    <div class=" alert  alert-success">
+        @TempData["Message"]
+    </div>
+}
+
+
+<h2>Make a reservation</h2>
+
+@if(Model.Vacation != null)
+{
+    <div class="vacation-solo">
+        @await Html.PartialAsync("_VacationAdminCard", Model.Vacation, new ViewDataDictionary(ViewData) { { "ShowVacationId", false }, { "ShowEditLink", false }, { "ShowDeleteLink", false } })
+    </div>
+}
+else
+{
+    <p class="text-danger">Vacation details are missing</p>
+}
+
+
+
+<form asp-action="Create" method="post" asp-controller="Reservation">
+    <input type="hidden" asp-for="UserId" />
+    <input type="hidden" asp-for="VacationId" />
+
+    <div class="form-group">
+        <label asp-for="DateCreatedReservation" class="form-label">Reservation date</label>
+        <input asp-for="DateCreatedReservation" type="date" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-dd")" max="@Model.Vacation?.StartDate.ToString("yyyy-MM-dd")" />
+        <span asp-validation-for="DateCreatedReservation" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Status" class="form-label"></label>
+        <select asp-for="Status" class="form-control">
+            <option value="Created" selected>Created</option>
+        </select>        
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Confirm reservation</button>
+    <a href="@Url.Action("Index","Vacation")" class="btn btn-danger">Cancel</a>
+</form>

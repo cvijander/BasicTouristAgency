@@ -43,6 +43,13 @@ namespace BasicTouristAgency.Services
                  .FirstOrDefault(r => r.ReservationId == id);
         }
 
+        public Reservation GetReservationByVacationId(int vacationId)
+        {
+            return _dbContext.Reservations
+                   .Include(r => r.Vacation)
+                   .FirstOrDefault(r => r.VacationId == vacationId);
+        }
+
         public void UpdateReservation(Reservation reservation)
         {
             _dbContext.Reservations.Update(reservation);

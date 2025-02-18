@@ -62,12 +62,31 @@
                         {
                             <a href="@Url.Action("Delete","Vacation", new {id = Model.VacationId })" class="btn btn-danger">Delete</a>
                         }
+                        @if (ViewData.ContainsKey("ShowReservationLink"))
+                        {
+                            if ((bool)ViewData["ShowReservationLink"] && Model.IsAvailableForReservation())
+                            {
+                                <a href="@Url.Action("Create","Reservation", new {vacationId = Model.VacationId})" class="btn btn-success">Make a reservation</a>
+                            }
+                            else
+                            {
+                                <button class="btn btn-secondary" disabled>Reservation closed</button>
+                            }
+                        }
+                        
                     }
                     else if (roles.Contains("User"))
                     {
-                        @if (ViewData.ContainsKey("ShowReservationLink") && (bool)ViewData["ShowReservationLink"])
+                        @if (ViewData.ContainsKey("ShowReservationLink"))
                         {
-                                <a href="@Url.Action("MakeAReservation","Reservation")" class="btn btn-success">Make a reservation</a>
+                            if ((bool)ViewData["ShowReservationLink"] && Model.IsAvailableForReservation())
+                            {
+                                <a href="@Url.Action("Create","Reservation", new {vacationId = Model.VacationId})" class="btn btn-success">Make a reservation</a>
+                            }
+                            else
+                            {
+                                <button class="btn btn-secondary" disabled>Reservation closed</button>
+                            }
                         }
                     }
                }
@@ -85,7 +104,7 @@
     </div>
        
 </div>
+
+
+
    
-
-
-

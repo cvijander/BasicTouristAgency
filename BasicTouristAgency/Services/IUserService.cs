@@ -6,7 +6,7 @@ namespace BasicTouristAgency.Services
     {
         IEnumerable<User> GetAllUsers();
 
-        User GetUserById(int id);
+        User GetUserById(string userId);
 
         void CreateUser (User user);
 

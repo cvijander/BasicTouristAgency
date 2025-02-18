@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace BasicTouristAgency.Models
 {
@@ -9,12 +11,16 @@ namespace BasicTouristAgency.Models
         [Required]
         public string UserId { get; set; }
 
-        public User User { get; set; }
+        [BindNever]
+        [ValidateNever]
+        public User? User { get; set; }
 
         [Required]
-        public int VacationId { get; set; } 
+        public int VacationId { get; set; }
 
-        public Vacation Vacation { get; set; }
+        [BindNever]
+        [ValidateNever]
+        public Vacation? Vacation { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
@@ -25,9 +31,19 @@ namespace BasicTouristAgency.Models
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if(DateCreatedReservation > Vacation.StartDate)
+            if (Vacation == null)
+            {
+                //yield return new ValidationResult("Vacation is missing", new[] { nameof(Vacation) });
+                yield break;
+            }
+
+            if (DateCreatedReservation.Date >= Vacation.StartDate.Date)
             {
                 yield return new ValidationResult("Can not make reservation after the startd date has begun ", new[] { nameof(DateCreatedReservation) });
+            }
+            if (DateCreatedReservation.Date < DateTime.Today.Date)
+            {
+                yield return new ValidationResult("The reservation can not be in the past", new[] { nameof(DateCreatedReservation) });
             }
 
 
