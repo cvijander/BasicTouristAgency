@@ -28,7 +28,7 @@ namespace BasicTouristAgency.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin,User")]
+        [Authorize(Roles = "Admin,Tourist")]
 
         public async Task<IActionResult> Create(int vacationId)
         {
@@ -66,7 +66,7 @@ namespace BasicTouristAgency.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,User")]
+        [Authorize(Roles = "Admin,Tourist")]
 
         public async Task<IActionResult> Create(Reservation reservation)
         {
@@ -151,7 +151,7 @@ namespace BasicTouristAgency.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin,User")]
+        [Authorize(Roles = "Admin,Tourist")]
         public IActionResult Confirm(int reservationId)
         {
             Console.WriteLine("Get confirm called");
@@ -187,7 +187,7 @@ namespace BasicTouristAgency.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin,User")]
+        [Authorize(Roles = "Admin,Tourist")]
         [ValidateAntiForgeryToken]
         public IActionResult Confirm(Reservation reservation)
         {

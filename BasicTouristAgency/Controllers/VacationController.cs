@@ -51,7 +51,7 @@ namespace BasicTouristAgency.Controllers
 
 
         [Authorize]
-        [Authorize(Roles ="User")]
+        [Authorize(Roles ="Tourist")]
         public IActionResult Details(int id)
         {
             return View();

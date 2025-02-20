@@ -206,14 +206,23 @@ namespace BasicTouristAgency.Controllers
         
         }
 
-        [HttpPost]
-        [Authorize(Roles ="Admin")]
-        [AutoValidateAntiforgeryToken]
-
-        public async Task<IActionResult> Index()
-
+        [HttpGet]
         [Authorize(Roles ="Admin")]
         public async Task<IActionResult> Delete(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if(user == null)
+            {
+                return NotFound();
+            }
+            return View(user);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles ="Admin")]
+        public async Task<IActionResult> ConfirmDelete(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
             if(user == null)
@@ -225,7 +234,7 @@ namespace BasicTouristAgency.Controllers
             if(user.Id == currentUser.Id)
             {
                 TempData["Error"] = "You can not delte yourself";
-                return RedirectToAction("ListUsers");
+                return RedirectToAction("Index");
             }
 
             var result = await _userManager.DeleteAsync(user);
@@ -238,7 +247,9 @@ namespace BasicTouristAgency.Controllers
                 TempData["Error"] = "Error deleting user";
             }
 
-            return RedirectToAction("ListUsers");
+            return RedirectToAction("Index");     
+
+            
         }
 
                

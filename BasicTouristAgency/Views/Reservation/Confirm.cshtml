@@ -8,6 +8,13 @@
 
 <p>Dear @User.Identity.Name, your reservation has been succesfully created</p>
 
+@if(Model.User != null)
+{
+    <div class="vacation-solo">
+        @await Html.PartialAsync("_UserAdminCard", Model.User, new ViewDataDictionary(ViewData) { { "ShowEditLink", false }, { "ShowDeleteLink", false } })
+    </div>
+}
+
 @if (Model.Vacation != null)
 {
     <div class="vacation-solo">

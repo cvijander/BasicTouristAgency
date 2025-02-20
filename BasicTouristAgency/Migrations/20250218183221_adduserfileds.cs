@@ -28,12 +28,7 @@ namespace BasicTouristAgency.Migrations
                 nullable: false,
                 defaultValue: "");
 
-            migrationBuilder.AddColumn<int>(
-                name: "UserType",
-                table: "AspNetUsers",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
+            
         }
 
         /// <inheritdoc />
@@ -47,9 +42,7 @@ namespace BasicTouristAgency.Migrations
                 name: "LastName",
                 table: "AspNetUsers");
 
-            migrationBuilder.DropColumn(
-                name: "UserType",
-                table: "AspNetUsers");
+            
 
             migrationBuilder.AddColumn<string>(
                 name: "Discriminator",

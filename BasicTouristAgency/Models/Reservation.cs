@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BasicTouristAgency.Models
 {
@@ -13,6 +14,7 @@ namespace BasicTouristAgency.Models
 
         [BindNever]
         [ValidateNever]
+        [ForeignKey("UserId")]
         public User? User { get; set; }
 
         [Required]
@@ -20,6 +22,7 @@ namespace BasicTouristAgency.Models
 
         [BindNever]
         [ValidateNever]
+        [ForeignKey("VacationId")]
         public Vacation? Vacation { get; set; }
 
         [Required]
@@ -27,7 +30,7 @@ namespace BasicTouristAgency.Models
         public DateTime DateCreatedReservation { get; set; }
 
         [Required]
-        public ReservationStatus Status { get; set; }
+        public ReservationStatus Status { get; set; } = ReservationStatus.Created;
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
