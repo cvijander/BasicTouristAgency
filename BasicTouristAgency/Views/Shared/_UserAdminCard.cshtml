@@ -1,0 +1,79 @@
+﻿@model BasicTouristAgency.Models.User
+
+@using Microsoft.AspNetCore.Identity;
+@using BasicTouristAgency.Models;
+
+@inject SignInManager<User> SignInManager;
+@inject UserManager<User> UserManager;
+
+
+<head>
+    <link rel="stylesheet" href="~/css/VacationCard.css" />
+    @{
+        ViewData["Title"] = $"{Model.FirstName} {Model.LastName}  info";
+    }
+</head>
+
+@{
+    string userRole = "Tourist";
+    var badgeColor = "bg-primary";
+
+    if(ViewBag.UserRoles != null )
+    {
+        var userRoles = (Dictionary<string, string>)ViewBag.UserRoles;
+        userRole = userRoles.ContainsKey(Model.Id) ? userRoles[Model.Id] : "Tourist";
+        badgeColor = userRole == "Admin" ? "bg-danger" : "bg-primary" ;
+    }
+    else 
+    {
+        var roles = await UserManager.GetRolesAsync(Model);
+        userRole = roles.Any() ? roles.First() : "Tourist";
+        badgeColor = userRole == "Admin" ? "bg-danger" : "bg-primary";
+    }
+
+    var currentUser = await UserManager.GetUserAsync(User);
+    var currentUserRoles = await UserManager.GetRolesAsync(currentUser);
+    bool isCurrentUserAdmin = currentUserRoles.Contains("Admin");
+    bool isCurrentUserProfile = currentUser?.Id == Model.Id;
+
+}
+
+
+<div class="vacation-info">
+    <div class="row">
+        <div class="col-md-8">
+            <h2 class="text-white text-uppercase"><strong>Name: </strong> @Model.FirstName  </h2>
+            <h2 class="text-white text-uppercase"><strong>Last name: </strong> @Model.LastName </h2>  
+            <p class="text-white"><strong class="text-white">Email: </strong> @Model.Email</p>
+
+            <p class="text-white">
+                <span class="badge @badgeColor">@userRole</span>
+            </p>                    
+
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="button-display-vacation">
+
+                @if (isCurrentUserAdmin && ViewData.ContainsKey("ShowDeleteLink") && (bool)ViewData["ShowDeleteLink"])
+                {
+                    <a href="@Url.Action("Delete","User", new {id = Model.Id })" class="btn btn-danger">Delete</a>
+                }
+               
+
+                @if ((isCurrentUserAdmin || isCurrentUserProfile) && ViewData.ContainsKey("ShowEditLink") && (bool)ViewData["ShowEditLink"])
+                    {
+                        string editButtonText = (string.IsNullOrEmpty(Model.FirstName) || string.IsNullOrEmpty(Model.LastName)) ? "Update profile" : "Edit profile";
+                        <a href="@Url.Action("Edit","User", new {id = Model.Id })" class="btn btn-primary">@editButtonText</a>
+                    }
+                
+
+            </div>
+        </div>
+   </div>      
+
+</div>
+
+
+
+

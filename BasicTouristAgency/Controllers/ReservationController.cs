@@ -117,14 +117,21 @@ namespace BasicTouristAgency.Controllers
                 reservation.Vacation = _unitOfWork.VacationService.GetVacationById(reservation.VacationId);
                 return View("Create",reservation);
             }
-                      
+                    
+            bool canReserve = await _unitOfWork.ReservationService.CanUserReserveVacation(reservation.UserId, reservation.VacationId);
                      
+            if(!canReserve)
+            {
+                Console.WriteLine("User already has a reservation! Showing error message...");
+                ViewBag.ErrorMessage = "You have already booked this vacation";
+                return View("Create",reservation);
+            }
             
             reservation.Status = Reservation.ReservationStatus.Created;
 
             try
             {
-                _unitOfWork.ReservationService.CreateReservation(reservation);
+               await _unitOfWork.ReservationService.CreateReservation(reservation);
                 _unitOfWork.SaveChanges();
 
                 TempData["Message"] = "Reservation succesfuly created ";

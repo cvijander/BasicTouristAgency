@@ -108,9 +108,9 @@ async Task SeedRolesAndAdminAsync(IServiceProvider services)
     {
         await roleManager.CreateAsync(new IdentityRole("Admin"));
     }
-    if (!await roleManager.RoleExistsAsync("User"))
+    if (!await roleManager.RoleExistsAsync("Tourist"))
     {
-        await roleManager.CreateAsync(new IdentityRole("User"));
+        await roleManager.CreateAsync(new IdentityRole("Tourist"));
     }
 
     // super user
@@ -123,5 +123,17 @@ async Task SeedRolesAndAdminAsync(IServiceProvider services)
     if (result.Succeeded)
     {
         await userManager.AddToRoleAsync(adminUser, "Admin");
+    }
+
+
+    // tourst rola svima 
+    var users = userManager.Users.ToList();
+    foreach(var user in users)
+    {
+        var roles = await userManager.GetRolesAsync(user);
+        if(!roles.Any())
+        {
+            await userManager.AddToRoleAsync(user, "Tourist");
+        }
     }
 }

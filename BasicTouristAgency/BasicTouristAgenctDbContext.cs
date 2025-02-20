@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 namespace BasicTouristAgency
 {
 
-    public class BasicTouristAgenctDbContext :IdentityDbContext
+    public class BasicTouristAgenctDbContext :IdentityDbContext<User>
     {
         public static readonly ILoggerFactory loggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
         {
@@ -19,5 +19,7 @@ namespace BasicTouristAgency
         public DbSet<Reservation> Reservations { get; set; }
 
         public DbSet<Vacation> Vacations { get; set; }
+
+       
     }
 }

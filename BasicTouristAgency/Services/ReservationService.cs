@@ -12,9 +12,22 @@ namespace BasicTouristAgency.Services
             _dbContext = dbContext;
         }
 
-        public void CreateReservation(Reservation reservation)
+        public async Task<bool> CanUserReserveVacation(string userId, int vacationId)
         {
+            return !await _dbContext.Reservations
+                .AnyAsync(r => r.UserId == userId && r.VacationId == vacationId);
+        }
+
+        public async Task<bool> CreateReservation(Reservation reservation)
+        {
+            if (!await CanUserReserveVacation(reservation.UserId, reservation.VacationId))
+            {
+                
+                return false;
+            }
             _dbContext.Reservations.Add(reservation);
+
+            return true;
         }
 
         public void DeleteReservation(int id)

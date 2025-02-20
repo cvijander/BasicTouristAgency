@@ -1,0 +1,59 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model BasicTouristAgency.ViewModel.PaginationViewModel<User>
+
+@inject UserManager<User> UserManager;
+
+@{
+    ViewData["Title"] = "Show all users";
+}
+
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-success">
+        @ViewBag.Message
+    </div>
+}
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Message"]
+    </div>
+}
+
+<form asp-action="Index" asp-controller="User" method="get">
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-3 m-2">
+                <label for="firstName" class="form-label"></label>
+                <input type="text" class="form-control" name="firstName" id="firstName" value="@Context.Request.Query["firstName"]" placeholder="Please enter first name" />
+            </div>
+            <div class="col-md-3 m-2">
+                <label for="lastName" class="form-label"></label>
+                <input type="text" class="form-control" name="lastName" id="lastName" value="@Context.Request.Query["lastName"]" placeholder="Please enter last name" />
+            </div>
+            <div class="col-md-3 m-2">
+                <label for="email" class="form-label"></label>
+                <input type="text" class="form-control" name="email" id="email" value="@Context.Request.Query["email"]" placeholder="Please enter email" />
+            </div>
+            <div class="col-md-1 m-2">
+                <button type="submit" class="btn btn-primary btn-sm">Search</button>
+            </div>
+            <div class="col-md-1 m-2">
+                <button type="reset" class="btn btn-warning btn-sm">Reset</button>
+            </div>               
+            
+        </div>           
+    </div>
+</form>
+
+<div class="vacation-list mt-5">
+    @foreach (User singleUser in Model.Collection)
+    {
+            @await Html.PartialAsync("_UserAdminCard", singleUser, new ViewDataDictionary(ViewData) {  { "ShowEditLink", true }, { "ShowDeleteLink", true }})
+        
+    }
+</div>
+
+
+@await Html.PartialAsync("_PaginationUsers", Model)

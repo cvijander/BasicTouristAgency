@@ -2,12 +2,12 @@
 
 namespace BasicTouristAgency.Services
 {
-       
+
     public class UserService : IUserService
     {
         private readonly BasicTouristAgenctDbContext _dbContext;
 
-        public UserService (BasicTouristAgenctDbContext dbContext)
+        public UserService(BasicTouristAgenctDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -20,7 +20,7 @@ namespace BasicTouristAgency.Services
         public void DeleteUser(int id)
         {
             User user = _dbContext.Users.Find(id);
-            if(user != null)
+            if (user != null)
             {
                 _dbContext.Users.Remove(user);
             }
@@ -45,5 +45,6 @@ namespace BasicTouristAgency.Services
         {
             _dbContext.Users.Update(user);
         }
-    }
+    }       
+        
 }

@@ -1,0 +1,24 @@
+﻿@model BasicTouristAgency.Models.User
+
+@{
+    ViewData["Title"] = $"Edit {Model.FirstName} {Model.LastName}";
+}
+
+
+<form asp-action="Edit" method="post" asp-controller="User">
+    <input type="hidden" asp-for="Id" value="@Model.Id" />
+    <div class="form-group">
+        <label asp-for="FirstName" class="form-label"></label>
+        <input type="text" asp-for="FirstName" class="form-control" minlength="2" maxlength="50" />
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+            
+    </div>
+    <div class="form-group">
+        <label asp-for="LastName" class="form-label"></label>
+        <input type="text" asp-for="LastName" class="form-control" minlength="2" maxlength="50"  />
+        <span asp-validation-for="LastName" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit changes</button>
+    <a href="@Url.Action("Profile","User")" class="btn btn-danger">Cancel</a>
+</form>

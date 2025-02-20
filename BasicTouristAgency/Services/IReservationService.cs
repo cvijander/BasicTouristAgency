@@ -8,12 +8,15 @@ namespace BasicTouristAgency.Services
 
         Reservation GetReservationById(int id);
 
-        void CreateReservation (Reservation reservation);
+        public  Task<bool> CreateReservation(Reservation reservation);
 
         void UpdateReservation (Reservation reservation);
 
         void DeleteReservation (int id);
 
         Reservation GetReservationByVacationId(int vacationId);
+
+        Task<bool> CanUserReserveVacation(string userId, int vacationId);
+        
     }
 }

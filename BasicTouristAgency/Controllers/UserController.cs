@@ -1,4 +1,5 @@
-﻿using BasicTouristAgency.Models;
+﻿using AspNetCoreGeneratedDocument;
+using BasicTouristAgency.Models;
 using BasicTouristAgency.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -25,21 +26,10 @@ namespace BasicTouristAgency.Controllers
             if (user == null)
             {
                 return RedirectToAction("Login", "Account");
-            }
+            }           
+                       
 
-            IEnumerable<User> users = _userManager.Users.ToList();
-
-            IEnumerable<IdentityRole> roles = _roleManager.Roles.ToList();
-
-           
-
-            UsersRoles ur = new UsersRoles();
-            ur.Roles = roles;
-            ur.Users = users;
-            ur.UserName = user.UserName;
-            ur.Email = user.Email;
-
-            return View(ur);
+            return View(user);
         }
 
         [HttpPost]
@@ -173,9 +163,137 @@ namespace BasicTouristAgency.Controllers
 
             return RedirectToAction("ManageRoles");
         }
-        public IActionResult Index()
+
+        [HttpGet]
+        [Authorize(Roles ="Admin")]
+        public async Task<IActionResult> Index(string firstName, string lastName, string email, int page = 1)
         {
-            return View();
+            var users = _userManager.Users.AsQueryable();
+
+            if(!string.IsNullOrEmpty(firstName))
+            {
+                users = users.Where(u => u.FirstName.Contains(firstName.Trim()));
+            }
+
+            if(!string.IsNullOrEmpty(lastName))
+            {
+                users = users.Where(u => u.LastName.Contains(lastName.Trim()));
+            }
+
+            if(!string.IsNullOrEmpty(email))
+            {
+                users = users.Where(u => u.Email.Contains(email.Trim()));
+            }
+
+            PaginationViewModel<User> pgvmUser = new ViewModel.PaginationViewModel<User>();
+
+            pgvmUser.TotalCount = users.Count();
+            pgvmUser.CurrentPage = page;
+            pgvmUser.PageSize = 5;
+
+            users = users.Skip(pgvmUser.PageSize * (pgvmUser.CurrentPage - 1)).Take(pgvmUser.PageSize);
+            pgvmUser.Collection = users;
+
+            var userRoles = new Dictionary<string, string>();
+            foreach (var user in pgvmUser.Collection)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                userRoles[user.Id] = roles.Any() ? roles.First() : "Tourist";
+            }
+            ViewBag.UserRoles = userRoles;
+
+            return View(pgvmUser);
+        
         }
+
+        [HttpPost]
+        [Authorize(Roles ="Admin")]
+        [AutoValidateAntiforgeryToken]
+
+        public async Task<IActionResult> Index()
+
+        [Authorize(Roles ="Admin")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if(user == null)
+            {
+                return NotFound();
+            }
+
+            var currentUser = await _userManager.GetUserAsync(User);
+            if(user.Id == currentUser.Id)
+            {
+                TempData["Error"] = "You can not delte yourself";
+                return RedirectToAction("ListUsers");
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+            if(result.Succeeded)
+            {
+                TempData["Success"] = "User deleted succeesfully";
+            }
+            else
+            {
+                TempData["Error"] = "Error deleting user";
+            }
+
+            return RedirectToAction("ListUsers");
+        }
+
+               
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Edit(string id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [AutoValidateAntiforgeryToken]
+        public async Task<IActionResult> Edit(User model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Profile");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+
+            return View(model);
+        }
+
     }
 }
