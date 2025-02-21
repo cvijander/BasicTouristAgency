@@ -1,0 +1,36 @@
+﻿@model IEnumerable<BasicTouristAgency.Models.Reservation>
+
+    @{
+        ViewData["Title"] = "All reservations";
+    }
+
+    <form method="get">
+        <input type="text" name="searchUser" placeholder="Serach nema" value="@Context.Request.Query["searchUser"]" class="form-control"/>
+        <input type="text" name="vacName" placeholder="vacation nema" value="@Context.Request.Query["vacName"]" class="form-control" />
+        <div class="col-md-3">
+        <select name="status" class="form-control">
+              <option value="">All Statuses</option>
+              @foreach (var status in Enum.GetValues(typeof(BasicTouristAgency.Models.Reservation.ReservationStatus)))
+                 {
+                      if (Context.Request.Query["status"] == status.ToString())
+                         {
+                          <option value="@status" selected>@status</option>
+                        }
+                      else
+                        {
+                        <option value="@status">@status</option>
+                        }
+                 }
+    </select>
+</div>
+
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <h2>Reservation</h2>
+
+    @foreach(var reservation in Model)
+    {
+       @await Html.PartialAsync("_ReservationAdminCard", reservation, new ViewDataDictionary(ViewData) { { "ReservationShowEditLink", true }, { "ReservationShowDeleteLink", true } })
+
+    }

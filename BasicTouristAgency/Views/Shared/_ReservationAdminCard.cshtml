@@ -1,0 +1,97 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model BasicTouristAgency.Models.Reservation
+
+@inject SignInManager<User> SignInManager;
+@inject UserManager<User> UserManager;
+
+
+<head>
+    <link rel="stylesheet" href="~/css/VacationCard.css" />
+
+    @{
+        ViewData["Title"] = "Reservation";
+    }
+
+</head>
+
+
+@{
+    string userRole = "Tourist";
+    var badgeColor = "bg-primary";
+
+    if (ViewBag.UserRoles != null)
+    {
+        var userRoles = (Dictionary<string, string>)ViewBag.UserRoles;
+        userRole = userRoles.ContainsKey(Model.User.Id) ? userRoles[Model.User.Id] : "Tourist";
+        badgeColor = userRole == "Admin" ? "bg-danger" : "bg-primary";
+    }
+    else
+    {
+        var roles = await UserManager.GetRolesAsync(Model.User);
+        userRole = roles.Any() ? roles.First() : "Tourist";
+        badgeColor = userRole == "Admin" ? "bg-danger" : "bg-primary";
+    }
+
+    var currentUser = await UserManager.GetUserAsync(User);
+    var currentUserRoles = await UserManager.GetRolesAsync(currentUser);
+    bool isCurrentUserAdmin = currentUserRoles.Contains("Admin");
+    bool isCurrentUserProfile = currentUser?.Id == Model.User.Id;
+
+}
+
+<div class="card mb-5 reservation-card">
+    <div class="card-body">
+        @if (Model.User != null)
+        {
+            <div class="vacation-solo">
+                @await Html.PartialAsync("_UserAdminCard", Model.User, new ViewDataDictionary(ViewData) { { "ShowEditLink", false }, { "ShowDeleteLink", false } })
+            </div>
+        }
+
+
+
+        @if (Model.Vacation != null)
+        {
+            <div class="vacation-solo">
+                @await Html.PartialAsync("_VacationAdminCard", Model.Vacation, new ViewDataDictionary(ViewData) { { "ShowVacationId", false }, { "ShowEditLink", false }, { "ShowDeleteLink", false } })
+            </div>
+        }
+        else
+        {
+            <p class="text-danger">Vacation details are missing</p>
+        }
+
+
+        <div class="vacation-info">
+            <div class="row">
+                <div class="col-md-8">
+                    <h2 class="text-white "><strong>Date reservation created: </strong> @Model.DateCreatedReservation.ToShortDateString()  </h2>
+                    <h2 class="text-white "><strong>Reservation status: </strong> @Model.Status </h2>    
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <div class="button-display-vacation">
+
+                        @if (isCurrentUserAdmin && ViewData.ContainsKey("ReservationShowEditLink") && (bool)ViewData["ReservationShowEditLink"])
+                        {
+                            <a href="@Url.Action("Edit","Reservation", new {id = Model.ReservationId })" class="btn btn-primary">Edit</a>
+                        }
+
+                        @if (isCurrentUserAdmin && ViewData.ContainsKey("ReservationShowDeleteLink") && (bool)ViewData["ReservationShowDeleteLink"])
+                        {
+                            <a href="@Url.Action("Delete","Reservation", new {id = Model.ReservationId })" class="btn btn-danger">Delete</a>
+                        }
+
+                        
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+

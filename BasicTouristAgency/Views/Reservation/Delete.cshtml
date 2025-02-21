@@ -1,0 +1,36 @@
+﻿@model BasicTouristAgency.Models.Reservation
+
+<head>
+    @{
+        ViewData["Title"] = $"Delete a {Model.ReservationId}";
+    }
+    <link rel="stylesheet" href="~/css/VacationCard.css" />
+</head>
+
+
+
+<div class="container mt-5">
+    <div class="card p-4">
+        <h2>Delete Reservation</h2>
+        <p>Are you sure you want to delete the following reservation?</p>
+
+        @await Html.PartialAsync("_ReservationAdminCard", Model, new ViewDataDictionary(ViewData) {  { "ReservationShowEditLink", false }, { "ReservationShowDeleteLink", false } })
+
+        <form asp-action="DeleteConfirmed" method="post">
+            <input type="hidden" name="id" value="@Model.ReservationId" />
+            <div class="row">
+                <div class="col-sm-5">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+                <div class="col-sm-2">
+                </div>
+                <div class="col-sm-5">
+                    <a href="@Url.Action("Index", "Reservation")" class="btn btn-secondary">Cancel</a>
+                </div>
+
+            </div>
+
+        </form>
+    </div>
+</div>
+
