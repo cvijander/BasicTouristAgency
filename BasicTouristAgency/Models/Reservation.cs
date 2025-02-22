@@ -9,7 +9,7 @@ namespace BasicTouristAgency.Models
     {
         public int ReservationId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "User id i requiored.")]
         public string UserId { get; set; }
 
         [BindNever]
@@ -17,7 +17,7 @@ namespace BasicTouristAgency.Models
         [ForeignKey("UserId")]
         public User? User { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Vacation id is reqired.")]
         public int VacationId { get; set; }
 
         [BindNever]
@@ -25,18 +25,18 @@ namespace BasicTouristAgency.Models
         [ForeignKey("VacationId")]
         public Vacation? Vacation { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Date of reservation is required.")]
         [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime DateCreatedReservation { get; set; }
 
-        [Required]
+        [Required (ErrorMessage = "Reservation status is required.")]
         public ReservationStatus Status { get; set; } = ReservationStatus.Created;
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (Vacation == null)
             {
-                //yield return new ValidationResult("Vacation is missing", new[] { nameof(Vacation) });
                 yield break;
             }
 
@@ -44,6 +44,7 @@ namespace BasicTouristAgency.Models
             {
                 yield return new ValidationResult("Can not make reservation after the startd date has begun ", new[] { nameof(DateCreatedReservation) });
             }
+
             if (DateCreatedReservation.Date < DateTime.Today.Date)
             {
                 yield return new ValidationResult("The reservation can not be in the past", new[] { nameof(DateCreatedReservation) });

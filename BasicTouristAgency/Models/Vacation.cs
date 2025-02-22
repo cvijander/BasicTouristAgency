@@ -6,42 +6,65 @@ namespace BasicTouristAgency.Models
     {
         public int VacationId { get; set; }
 
-        [Required]
-        [StringLength(50)]
+        [Required(ErrorMessage = "Vacation name is required.")]
+        [StringLength(50, ErrorMessage = "Vacation name must be at most 50 characters.")]
+        [MinLength(2,ErrorMessage = "Vacation name must be at least 2 characters.")]
         public string VacationName { get; set; }
 
-        [Required]
-        [StringLength(450)]
+        [Required(ErrorMessage = "Vacation description is required.")]
+        [StringLength(450, ErrorMessage = "Vacation description must be at most 450 characters.")]
+        [MinLength(2,ErrorMessage = "Vacation description must be at least 2 characters.")]
         public string VacationDescription { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Start date is required.")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime StartDate { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "End date is required.")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime EndDate { get; set; }
 
-        [Required]
-        [Range(0.01, double.MaxValue)]
+        [Required(ErrorMessage = "Price is required.")]
+        [Range(0.01, 20000, ErrorMessage = "Price must be between 0.01 and 20000")]
         public decimal Price { get; set; }
 
         [Required(ErrorMessage = "Please select a vacation type.")]
-        public VacationType Type { get; set; }
+        public VacationType Type 
+        {
+            get {
+                DateTime maxLastMinuteStart = DateTime.Now.AddDays(10).Date;
+                if (_type !=Vacation.VacationType.LastMinute && StartDate < maxLastMinuteStart)
+                {
+                    return VacationType.LastMinute;
+                }
+                return _type;
+            }
+            set 
+            {
+                _type = value;
+            }
+        }
+        private VacationType _type;
 
 
+
+        // aditional validation with time 
+        // vacation expired 
         public bool IsExpired()
         {
             return EndDate < DateTime.Today;
         }
 
+        // vacation has starded 
         public bool HasStarted()
         {
             return StartDate <= DateTime.Today;
         }
 
+
+        // available for reservation if has not expired and time od start is greater that tis thime right now 
         public bool IsAvailableForReservation()
         {
             return !IsExpired() && !HasStarted();
@@ -50,6 +73,8 @@ namespace BasicTouristAgency.Models
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
+
+
             if(EndDate < StartDate)
             {
                 yield return new ValidationResult("Can not have a end date before start date", new[] { nameof(EndDate) });
@@ -60,6 +85,8 @@ namespace BasicTouristAgency.Models
                 yield return new ValidationResult("can not have a price 0 or below", new[] { nameof(Price) });
             }
 
+            //variables 
+
             int startMonth = StartDate.Month;
             int endMonth = EndDate.Month;
             int maxDuration = 60;
@@ -68,10 +95,14 @@ namespace BasicTouristAgency.Models
             DateTime minLastMinuteStart = DateTime.Now.Date;
             
 
+
+            // for changing every vacation to last minute offer 
+
              if (Type !=Vacation.VacationType.LastMinute &&  StartDate < maxLastMinuteSrart)
-                {
-                 Type = Vacation.VacationType.LastMinute;
-                }
+             {
+                //yield return new ValidationResult("This vacation should be marked as 'Last minute'.", new[] { nameof(VacationType) });
+                Type =Vacation.VacationType.LastMinute;
+             }
 
             switch (Type)
             {
@@ -98,7 +129,7 @@ namespace BasicTouristAgency.Models
                     break;
 
                 case Vacation.VacationType.Winter:
-                    if(!(startMonth >= 11 || startMonth <= 3))
+                    if(startMonth > 3 && startMonth <= 11)
                     {
                         yield return new ValidationResult("Winter vacation can only start only in novbmer or december, and end in mart or april", new[] { nameof(StartDate) });
 

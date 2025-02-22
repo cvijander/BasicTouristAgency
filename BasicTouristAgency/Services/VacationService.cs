@@ -19,6 +19,17 @@ namespace BasicTouristAgency.Services
             _dbContext.Vacations.Add(vacation);
         }
 
+        public void UpdateLastMinuteStatus(Vacation vacation)
+        {
+            DateTime maxLastMinuteStart = DateTime.Now.AddDays(10).Date;
+
+            if(vacation.Type != Vacation.VacationType.LastMinute && vacation.StartDate < maxLastMinuteStart)
+            {
+                vacation.Type = Vacation.VacationType.LastMinute;
+                _dbContext.Vacations.Update(vacation);
+            }
+        }
+
         public void DeleteVacation(int id)
         {
             Vacation vacation = _dbContext.Vacations.Find(id);
@@ -118,6 +129,18 @@ namespace BasicTouristAgency.Services
             //{
             //    vacations = vacations.OrderBy(v => v.StartDate);
             //}
+
+            foreach (var vacation in vacations)
+            {
+                if (vacation.Type != Vacation.VacationType.LastMinute && vacation.StartDate < DateTime.Now.AddDays(10))
+                {
+                    vacation.Type = Vacation.VacationType.LastMinute;
+                    _dbContext.Vacations.Update(vacation);
+                }
+            }
+            _dbContext.SaveChanges();
+
+
             return vacations.ToList();
                         
         }
