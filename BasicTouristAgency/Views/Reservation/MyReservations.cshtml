@@ -1,0 +1,40 @@
+﻿@model BasicTouristAgency.ViewModel.PaginationViewModel<BasicTouristAgency.Models.Reservation>
+
+    @{
+        ViewData["Title"] = " My reservation";
+    }
+
+
+
+<form method="get">
+    <input type="text" name="vacationName" placeholder="Search a vacation" value="@Context.Request.Query["vacationName"]" class="form-control" />    
+    <div class="col-md-3">
+        <select name="status" class="form-control">
+            <option value="">All Statuses</option>
+            @foreach (var status in Enum.GetValues(typeof(BasicTouristAgency.Models.Reservation.ReservationStatus)))
+            {
+                if (Context.Request.Query["status"] == status.ToString())
+                {
+                    <option value="@status" selected>@status</option>
+                }
+                else
+                {
+                    <option value="@status">@status</option>
+                }
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<h2>My Reservation</h2>
+
+@foreach (var reservation in Model.Collection)
+{
+    @await Html.PartialAsync("_ReservationAdminCard", reservation, new ViewDataDictionary(ViewData) { { "ReservationShowEditLink", false }, { "ReservationShowDeleteLink", false } })
+
+}
+
+
+@await Html.PartialAsync("_PaginationMyReservations", Model)

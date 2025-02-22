@@ -1,4 +1,5 @@
-﻿@model IEnumerable<BasicTouristAgency.Models.Reservation>
+﻿@model BasicTouristAgency.ViewModel.PaginationViewModel<Reservation>
+
 
     @{
         ViewData["Title"] = "All reservations";
@@ -29,8 +30,11 @@
 
     <h2>Reservation</h2>
 
-    @foreach(var reservation in Model)
+    @foreach(var reservation in Model.Collection)
     {
        @await Html.PartialAsync("_ReservationAdminCard", reservation, new ViewDataDictionary(ViewData) { { "ReservationShowEditLink", true }, { "ReservationShowDeleteLink", true } })
 
     }
+
+
+  @await Html.PartialAsync("_PaginationReservation", Model)

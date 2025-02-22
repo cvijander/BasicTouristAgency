@@ -1,10 +1,12 @@
 ﻿using BasicTouristAgency.Models;
 using BasicTouristAgency.Services;
+using BasicTouristAgency.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using static BasicTouristAgency.Models.Reservation;
 
 namespace BasicTouristAgency.Controllers
@@ -26,7 +28,7 @@ namespace BasicTouristAgency.Controllers
         [HttpGet]
         [Authorize(Roles ="Admin")]
 
-        public IActionResult Index(string searchUser,string vacName,string status)
+        public IActionResult Index(string searchUser,string vacName,string status, int page = 1)
         {
 
             var reservations = _unitOfWork.ReservationService.GetAllReservation();
@@ -49,7 +51,17 @@ namespace BasicTouristAgency.Controllers
             {
                 reservations = reservations.Where(r => r.Status == parsedStatus);
             }
-            return View(reservations);
+
+            PaginationViewModel<Reservation> pgvmReservation = new ViewModel.PaginationViewModel<Reservation>();
+
+            pgvmReservation.TotalCount = reservations.Count();
+            pgvmReservation.CurrentPage =page;
+            pgvmReservation.PageSize = 5;
+
+            reservations = reservations.Skip(pgvmReservation.PageSize * (pgvmReservation.CurrentPage -1)).Take(pgvmReservation.PageSize).ToList();
+            pgvmReservation.Collection = reservations;
+                                    
+            return View(pgvmReservation);
         }
 
         [HttpGet]
@@ -177,7 +189,7 @@ namespace BasicTouristAgency.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin,Tourist")]
-        public IActionResult Confirm(int reservationId)
+        public async Task<IActionResult> Confirm(int reservationId)
         {
             Console.WriteLine("Get confirm called");
             Console.WriteLine($"ReservationId {reservationId}");
@@ -204,6 +216,31 @@ namespace BasicTouristAgency.Controllers
                 TempData["Error"] = "You are not authorized to view this reservation.";
                 return RedirectToAction("Index", "Vacation");
             }
+
+            string subject = "Reservation Confirmation";
+            string body = $@"
+                       <h2>Thank you for tour reservation</h2>
+                       <p><strong>Destination:</strong> {reservation.Vacation.VacationName}</p> 
+                       <p><strong>Start date </strong> {reservation.Vacation.StartDate.ToShortDateString()}</p>
+                       <p><strong>Status </strong> {reservation.Status}</p>
+                       <br>
+                       <p>You can view you reservation gere <a href='https://localhost:7098/Reservation/MyReservations'>My reservations</a></p>";
+
+            await _emailSender.SendEmailAsync(User.Identity.Name, subject, body);
+
+            string adminEmail = "cvija85@gmail.com";
+            string adminSubject = "New Reservation created";
+            string adminBody = $@"
+                       <h2>New reservation notofikacion</h2>
+                       <p><strong>User </strong> {User.Identity.Name} has made a reservation</p>
+                       <p><strong>Destination </strong> {reservation.Vacation.VacationName}</p>
+                       <p><strong>Start date </strong> {reservation.Vacation.StartDate.ToShortDateString()}</p>
+                       <p><strong>Status</strong>{reservation.Status}
+                       <br>
+                       <p>You can manage reservations here: <a href='https://localhost:7098/Reservation/Index'>All Reservations</a></p>";
+
+            await _emailSender.SendEmailAsync(adminEmail, adminSubject, adminBody);
+                         
 
 
             return View(reservation);
@@ -325,6 +362,31 @@ namespace BasicTouristAgency.Controllers
                 return RedirectToAction("Index", new { message = "Failed to delete reservation" });
 
             }
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> MyReservations(string vacationName, string status, int page =1 )
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var reservations = _unitOfWork.ReservationService.GetFilteredMyReservations(currentUser.Id,vacationName, status);
+
+            PaginationViewModel<Reservation> pgvmMyReservation = new ViewModel.PaginationViewModel<Reservation>();
+
+            pgvmMyReservation.TotalCount = reservations.Count();
+            pgvmMyReservation.CurrentPage = page;
+            pgvmMyReservation.PageSize = 5;
+
+            reservations = reservations.Skip(pgvmMyReservation.PageSize * (pgvmMyReservation.CurrentPage - 1)).Take(pgvmMyReservation.PageSize).ToList();
+            pgvmMyReservation.Collection = reservations;
+
+
+            return View(pgvmMyReservation);           
         }
 
     }

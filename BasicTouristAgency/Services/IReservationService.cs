@@ -16,7 +16,12 @@ namespace BasicTouristAgency.Services
 
         Reservation GetReservationByVacationId(int vacationId);
 
+        public Reservation GetReservationByUserId(string userId);
+
         Task<bool> CanUserReserveVacation(string userId, int vacationId);
-        
+
+        public IEnumerable<Reservation> GetFilteredMyReservations(string userId, string vacationName, string status);
+
+
     }
 }

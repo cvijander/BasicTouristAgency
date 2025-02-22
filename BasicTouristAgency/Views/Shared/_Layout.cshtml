@@ -25,9 +25,7 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Vacation" asp-action="Create">Create a vacation</a>
-                        </li>
+                       
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Vacation" asp-action="Index">Show all vacations</a>
                         </li>
@@ -40,6 +38,9 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="@Url.Action("Profile","User")">Profile</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Reservation" asp-action="MyReservations">My reservations</a>
                             </li>
                             <li class="nav-item">
                                 <form method="post" asp-area="Identity" asp-page="/Account/Logout">
@@ -57,6 +58,9 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="Reservation" asp-action="Index">Manage reservarions</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Vacation" asp-action="Create">Create a vacation</a>
                                 </li>
                             }
 
