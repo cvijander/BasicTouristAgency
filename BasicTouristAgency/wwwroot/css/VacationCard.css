@@ -144,6 +144,22 @@
     color: white;
 }
 
+.Admin {
+    background-image: url('/images/background-images/Admin.jpg');
+    background-size: cover;
+    border: 5px solid #98FB98;
+    border-radius: 10px;
+    color: white;
+}
+
+.Tourist {
+    background-image: url('/images/background-images/Tourist.jpg');
+    background-size: cover;
+    border: 5px solid #98FB98;
+    border-radius: 10px;
+    color: white;
+}
+
 .card-img-top {
     max-height: 200px;
     object-fit: cover;

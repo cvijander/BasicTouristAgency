@@ -19,9 +19,12 @@ namespace BasicTouristAgency.Controllers
             _roleManager = roleManager;
         }
 
-        public IActionResult Profile()
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Profile()
         {
-            var user = _userManager.GetUserAsync(User).Result;
+            // trnutno prijavljen korisnik 
+            var user = await _userManager.GetUserAsync(User);
 
             if (user == null)
             {
@@ -210,7 +213,13 @@ namespace BasicTouristAgency.Controllers
         [Authorize(Roles ="Admin")]
         public async Task<IActionResult> Delete(string id)
         {
+            if(id == null)
+            {
+                return NotFound();
+            }
+
             var user = await _userManager.FindByIdAsync(id);
+
             if(user == null)
             {
                 return NotFound();
@@ -224,14 +233,26 @@ namespace BasicTouristAgency.Controllers
         [Authorize(Roles ="Admin")]
         public async Task<IActionResult> ConfirmDelete(string id)
         {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
             var user = await _userManager.FindByIdAsync(id);
+
             if(user == null)
             {
                 return NotFound();
             }
 
             var currentUser = await _userManager.GetUserAsync(User);
-            if(user.Id == currentUser.Id)
+
+            if (currentUser == null)
+            {
+                return NotFound();
+            }
+
+            if (user.Id == currentUser.Id)
             {
                 TempData["Error"] = "You can not delte yourself";
                 return RedirectToAction("Index");
@@ -283,6 +304,7 @@ namespace BasicTouristAgency.Controllers
                 return View(model);
             }
 
+            // uzimanje korinika iz baze posto model nema sve podatke 
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {

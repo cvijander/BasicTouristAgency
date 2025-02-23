@@ -17,6 +17,9 @@ namespace BasicTouristAgency.Services
 
         void DeleteVacation (int id);
 
+        // zaduzxeno za listu vacationa 
         public List<SelectListItem> GetVacationTypes();
+
+        public void UpdateLastMinuteStatus(Vacation vacation);
     }
 }

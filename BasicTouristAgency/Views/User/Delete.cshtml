@@ -17,7 +17,7 @@
 
         @await Html.PartialAsync("_UserAdminCard", Model, new ViewDataDictionary(ViewData) {  { "ShowEditLink", false }, { "ShowDeleteLink", false } })
 
-        <form asp-action="ConfirmDelete" method="post">
+        <form asp-action="ConfirmDelete" method="post" asp-controller="User">
             <input type="hidden" name="id" value="@Model.Id" />
             <div class="row">
                 <div class="col-sm-5">

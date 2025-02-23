@@ -57,7 +57,7 @@ namespace BasicTouristAgency.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Failder to send email to {email} : {ex.Message}");
+                _logger.LogError($"Failed to send email to {email} : {ex.Message}");
                 throw;
             }
 

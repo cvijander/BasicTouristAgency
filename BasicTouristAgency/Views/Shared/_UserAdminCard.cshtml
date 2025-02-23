@@ -20,7 +20,7 @@
 
     if(ViewBag.UserRoles != null )
     {
-        var userRoles = (Dictionary<string, string>)ViewBag.UserRoles;
+        Dictionary<string,string> userRoles = (Dictionary<string, string>)ViewBag.UserRoles;
         userRole = userRoles.ContainsKey(Model.Id) ? userRoles[Model.Id] : "Tourist";
         badgeColor = userRole == "Admin" ? "bg-danger" : "bg-primary" ;
     }
@@ -32,14 +32,14 @@
     }
 
     var currentUser = await UserManager.GetUserAsync(User);
-    var currentUserRoles = await UserManager.GetRolesAsync(currentUser);
-    bool isCurrentUserAdmin = currentUserRoles.Contains("Admin");
+    var currentUserRole = await UserManager.GetRolesAsync(currentUser);
+    bool isCurrentUserAdmin = currentUserRole.Contains("Admin");
     bool isCurrentUserProfile = currentUser?.Id == Model.Id;
 
 }
 
 
-<div class="vacation-info">
+<div class="vacation-info @userRole">
     <div class="row">
         <div class="col-md-8">
             <h2 class="text-white text-uppercase"><strong>Name: </strong> @Model.FirstName  </h2>

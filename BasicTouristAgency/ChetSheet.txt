@@ -1,0 +1,47 @@
+﻿
+Brzi recnik 
+
+// uzimanje CELOG prijavljenog korisnika 
+
+var user = await _userManager.GetUserAsync(User);
+
+ako nije privlajne vraca NULL
+
+
+
+//  dohvatranje korisnika po ID dakle dam mu prijavljenog USERA i dobijem njegov ID
+
+var userId = _userManager.GetUserId(User);
+var user = await _userManager.FindByIdAsync(userId);
+
+
+// role 
+
+
+var roles = await _userManager.GetRolesAsync(user);
+
+
+// Vraća korisnika iz baze pomoću ID-a
+
+
+var user = await _userManager.FindByIdAsync(userId);
+
+
+
+_userManager.GetUserAsync(User)	Ceo objekat korisnika	Kada ti trebaju podaci o trenutno prijavljenom korisniku
+_userManager.GetUserId(User)	Samo UserId (string)	Kada ti treba samo ID trenutno prijavljenog korisnika
+_userManager.FindByIdAsync(userId)	Ceo objekat korisnika	Kada već znaš UserId i hoćeš da dohvatiš korisnika iz baze
+
+
+
+
+ViewDataDictionary 
+to je kolekcija za prenos podataka izmedju konotroler i view 
+koristi string kao kljuc i objekat kao vrednost, tako da moze da ima bilo sta 
+
+
+
+
+Servis	                     Čemu služi?	                                                      Glavne metode
+SignInManager<User>	     Provera prijave korisnika (da li je ulogovan, prijava, odjava)	          IsSignedIn(User), SignInAsync(), SignOutAsync()
+UserManager<User>	     Rad sa korisnicima u bazi (kreiranje, ažuriranje, promene uloga)	          FindByIdAsync(), UpdateAsync(), ChangePasswordAsync()
