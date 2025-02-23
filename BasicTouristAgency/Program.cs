@@ -58,6 +58,8 @@ builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<IVacationService, VacationService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+builder.Configuration["ASPNETCORE_ENVIRONMENT"] = "Development";
+
 var app = builder.Build();
 
 app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
@@ -82,7 +84,11 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}"); // 404
+
 app.UseRouting();
+
+
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -1,4 +1,4 @@
-using BasicTouristAgency.Models;
+﻿using BasicTouristAgency.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -29,6 +29,21 @@ namespace BasicTouristAgency.Controllers
         {
             _logger.LogError("An error occurred.");
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [Route("Home/Error/{statusCode}")]
+        public IActionResult Error(int? statusCode)
+        {
+            if (statusCode == 404)
+            {
+                return View("NotFound"); // Prikazuje prilagođenu stranicu
+            }
+            return View("Error");
+        }
+
+        public IActionResult TestNotFound()
+        {
+            return View("NotFound");
         }
     }
 }

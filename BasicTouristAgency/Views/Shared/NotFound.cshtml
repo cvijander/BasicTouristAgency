@@ -1,0 +1,50 @@
+﻿@{
+    Layout = null;
+}
+
+<style>
+    body {
+        background-image: url('/images/background-images/404.jpg'); 
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-shadow: 2px 2px 5px black;
+        text-align: center;
+    }
+
+    .notfound-container {
+        background: rgba(0, 0, 0, 0.5);
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    .btn-light {
+        display: inline-block;
+        background-color: white; /* Bela pozadina */
+        color: black; /* Crni tekst */
+        font-size: 20px; /* Veći font */
+        padding: 15px 30px; /* Veće dugme */
+        border: 2px solid black; /* Crna ivica */
+        border-radius: 8px; /* Zaobljeni uglovi */
+        text-decoration: none; /* Uklanja podvlačenje */
+        font-weight: bold; /* Podebljan tekst */
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2); /* Blaga senka */
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn-light:hover{
+            background-color: rgba(255, 255, 255, 0.8); /* Blago providna bela */
+            transform: scale(1.05); /* Blago povećanje pri hover efektu */
+</style>
+
+<div class="notfound-container">
+    <h1>404 - Lost in the Jungle</h1>
+    <p>Oops! It looks like you got lost. Try finding your way back!</p>
+    <a href="@Url.Action("Index", "Home")" class="btn btn-light">Go Home</a>
+</div>

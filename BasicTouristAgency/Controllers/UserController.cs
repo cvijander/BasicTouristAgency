@@ -4,6 +4,7 @@ using BasicTouristAgency.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BasicTouristAgency.Controllers
 {
@@ -185,7 +186,22 @@ namespace BasicTouristAgency.Controllers
 
             if(!string.IsNullOrEmpty(email))
             {
-                users = users.Where(u => u.Email.Contains(email.Trim()));
+               
+                var user = await _userManager.Users.SingleOrDefaultAsync(u => u.Email == email.Trim());
+
+                if (user == null)
+                {
+                    return View("NotFound");
+                }
+
+                PaginationViewModel<User> singleUserPagination = new PaginationViewModel<User>
+                {
+                    TotalCount = 1,
+                    CurrentPage = 1,
+                    PageSize = 1,
+                    Collection =  new List<User> { user }
+                };
+                return View(singleUserPagination);
             }
 
             PaginationViewModel<User> pgvmUser = new ViewModel.PaginationViewModel<User>();
@@ -197,7 +213,8 @@ namespace BasicTouristAgency.Controllers
             users = users.Skip(pgvmUser.PageSize * (pgvmUser.CurrentPage - 1)).Take(pgvmUser.PageSize);
             pgvmUser.Collection = users;
 
-            var userRoles = new Dictionary<string, string>();
+
+            Dictionary<string, string> userRoles = new Dictionary<string, string>();
             foreach (var user in pgvmUser.Collection)
             {
                 var roles = await _userManager.GetRolesAsync(user);
@@ -215,14 +232,14 @@ namespace BasicTouristAgency.Controllers
         {
             if(id == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
             var user = await _userManager.FindByIdAsync(id);
 
             if(user == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
             return View(user);
         }
@@ -235,21 +252,21 @@ namespace BasicTouristAgency.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
             var user = await _userManager.FindByIdAsync(id);
 
             if(user == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
             var currentUser = await _userManager.GetUserAsync(User);
 
             if (currentUser == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
             if (user.Id == currentUser.Id)
@@ -281,14 +298,14 @@ namespace BasicTouristAgency.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
             var user = await _userManager.FindByIdAsync(id);
 
             if (user == null)
             {
-                return NotFound();
+                return View("NotFound");
             }
 
             return View(user);
@@ -328,5 +345,10 @@ namespace BasicTouristAgency.Controllers
             return View(model);
         }
 
+
+        public IActionResult TestNotFound()
+        {
+            return View("~/Views/Shared/NotFound.cshtml"); // Direktno navodi putanju
+        }
     }
 }

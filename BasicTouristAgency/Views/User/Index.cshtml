@@ -20,6 +20,18 @@
         @TempData["Message"]
     </div>
 }
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
 
 <form asp-action="Index" asp-controller="User" method="get">
     <div class="form-group">
@@ -40,7 +52,7 @@
                 <button type="submit" class="btn btn-primary btn-sm">Search</button>
             </div>
             <div class="col-md-1 m-2">
-                <button type="reset" class="btn btn-warning btn-sm">Reset</button>
+                <a href="@Url.Action("Index","User")" class="btn btn-warning btn-sm">Reset</a>
             </div>               
             
         </div>           
