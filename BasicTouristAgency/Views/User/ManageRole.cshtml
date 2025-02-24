@@ -13,11 +13,7 @@
 
     <div class="form-group">
         <label for="SelectedRole">Select a role:</label>
-        <select name="SelectedRole" class="form-control">
-            @foreach(var role in Model.AvailableRoles)
-            {
-                <option value="@role" selected="@(Model.SelectedRole == role ? "selected" : null )">@role</option>
-            }
+        <select name="SelectedRole" class="form-control" asp-items="@(new SelectList(Model.AvailableRoles))">            
         </select>
     </div>
     

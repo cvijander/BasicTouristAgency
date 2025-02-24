@@ -64,14 +64,13 @@ namespace BasicTouristAgency.Controllers
                     return View("NotFound");
                 }
 
-                PaginationViewModel<User> singleUserPagination = new PaginationViewModel<User>
-                {
-                    TotalCount = 1,
-                    CurrentPage = 1,
-                    PageSize = 1,
-                    Collection = new List<User> { user }
-                };
-                return View(singleUserPagination);
+                PaginationViewModel<User> pvmsSingleUser = new PaginationViewModel<User>();
+                pvmsSingleUser.TotalCount = 1;
+                pvmsSingleUser.CurrentPage = 1;
+                pvmsSingleUser.PageSize = 1;
+                pvmsSingleUser.Collection = new List<User> { user };
+                
+                return View(pvmsSingleUser);
             }
 
             PaginationViewModel<User> pgvmUser = new ViewModel.PaginationViewModel<User>();
@@ -137,11 +136,15 @@ namespace BasicTouristAgency.Controllers
         [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> UpdateManageRole(string userId, string SelectedRole)
         {
-            
-
-            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(SelectedRole))
+            if(string.IsNullOrEmpty(userId))
             {
-                TempData["Error"] = "Invalid user or role selected!";
+                TempData["Error"] = "Invalid user id";
+                return RedirectToAction("ManageRoles");
+            }
+
+            if (string.IsNullOrEmpty(SelectedRole))
+            {
+                TempData["Error"] = "Invalid  role selected!";
                 return RedirectToAction("ManageRoles");
             }
 
@@ -161,6 +164,13 @@ namespace BasicTouristAgency.Controllers
 
            
             var currentRoles = await _userManager.GetRolesAsync(user);
+
+            if(currentRoles.Contains(SelectedRole))
+            {
+                TempData["Message"] = "User is already in the slecetred role";
+                return RedirectToAction("ManageRoles");
+            }
+
             await _userManager.RemoveFromRolesAsync(user, currentRoles);
 
             
@@ -358,7 +368,7 @@ namespace BasicTouristAgency.Controllers
 
         public IActionResult TestNotFound()
         {
-            return View("~/Views/Shared/NotFound.cshtml"); // Direktno navodi putanju
+            return View("~/Views/Shared/NotFound.cshtml"); 
         }
     }
 }

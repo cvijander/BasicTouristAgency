@@ -1,5 +1,8 @@
 ﻿@model BasicTouristAgency.ViewModel.IPaginationViewModel<BasicTouristAgency.Models.User>
 
+    @{
+        string actrionName = ViewContext.RouteData.Values["action"].ToString();
+    }
 
 
 <head>
@@ -9,7 +12,7 @@
 <nav class="Page-navigation">
     @if (Model.HasPrevious)
     {
-        <a href="@Url.Action("Index",new {
+        <a href="@Url.Action( actrionName ,new {
               page = Model.CurrentPage -1,
               firstName = Context.Request.Query["firstName"],
               lastName = Context.Request.Query["lastName"],
@@ -21,7 +24,7 @@
     {
         if (Model.CurrentPage == i)
         {
-            <a href="@Url.Action("Index", new {
+            <a href="@Url.Action( actrionName, new {
               page = i ,
                firstName = Context.Request.Query["firstName"],
               lastName = Context.Request.Query["lastName"],
@@ -31,7 +34,7 @@
 
         else
         {
-            <a href="@Url.Action("Index", new {
+            <a href="@Url.Action( actrionName, new {
               page = i ,
               firstName = Context.Request.Query["firstName"],
               lastName = Context.Request.Query["lastName"],
@@ -41,7 +44,7 @@
     }
     @if (Model.HasNext)
     {
-        <a href="@Url.Action("Index", new {
+        <a href="@Url.Action(actrionName , new {
               page = Model.CurrentPage + 1,
                firstName = Context.Request.Query["firstName"],
               lastName = Context.Request.Query["lastName"],

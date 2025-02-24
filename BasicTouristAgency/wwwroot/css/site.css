@@ -20,3 +20,12 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+navbar-brand img {
+    max-height: 50px;
+    width: auto;
+}
+
+.navbar {
+    background-color: #8B5A2B; 
+}
