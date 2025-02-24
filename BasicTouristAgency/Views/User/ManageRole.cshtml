@@ -1,0 +1,34 @@
+﻿@model BasicTouristAgency.ViewModel.ManageRoleViewModel
+
+@{
+    ViewData["Title"] = $"Manage @{Model.UserName} role";
+}
+
+<h2>Manage role for @Model.UserName</h2>
+
+@await Html.PartialAsync("_UserRoleCard", Model)
+
+<form asp-action="UpdateManageRole" method="post" asp-controller="User">
+    <input type="hidden" name="UserId" value="@Model.UserId" />
+
+    <div class="form-group">
+        <label for="SelectedRole">Select a role:</label>
+        <select name="SelectedRole" class="form-control">
+            @foreach(var role in Model.AvailableRoles)
+            {
+                <option value="@role" selected="@(Model.SelectedRole == role ? "selected" : null )">@role</option>
+            }
+        </select>
+    </div>
+    
+    <div class="row">
+        <div class="col-sm-5">
+            <button type="submit" class="btn btn-warning mt-2">Update role</button>
+        </div>
+        <div class="col-sm-2">
+        </div>
+        <div class="col-sm-5">
+            <a href="@Url.Action("ManageRoles","User")" class="btn btn-secondary mt-2">Cancel</a>
+        </div>
+    </div>       
+</form>

@@ -1,5 +1,7 @@
-﻿@model BasicTouristAgency.Models.User
+﻿
+@model BasicTouristAgency.Models.User
 
+@using BasicTouristAgency.ViewModel
 @using Microsoft.AspNetCore.Identity;
 @using BasicTouristAgency.Models;
 
@@ -10,9 +12,11 @@
 <head>
     <link rel="stylesheet" href="~/css/VacationCard.css" />
     @{
-        ViewData["Title"] = $"{Model.FirstName} {Model.LastName}  info";
+        ViewData["Title"] = $"{Model.FirstName} {Model.LastName} info";
     }
 </head>
+
+
 
 @{
     string userRole = "Tourist";
@@ -58,6 +62,12 @@
                 @if (isCurrentUserAdmin && ViewData.ContainsKey("ShowDeleteLink") && (bool)ViewData["ShowDeleteLink"])
                 {
                     <a href="@Url.Action("Delete","User", new {id = Model.Id })" class="btn btn-danger">Delete</a>
+                }
+
+                @if (isCurrentUserAdmin && ViewData.ContainsKey("ShowRoleLink") && (bool)ViewData["ShowRoleLink"])
+                {
+                    
+                    <a href="@Url.Action("ManageRole","User", new {id = Model.Id })" class="btn btn-danger">Manage role</a>
                 }
                
 

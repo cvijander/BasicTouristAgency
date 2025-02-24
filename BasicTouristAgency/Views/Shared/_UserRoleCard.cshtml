@@ -1,0 +1,19 @@
+﻿@model BasicTouristAgency.ViewModel.ManageRoleViewModel
+
+<head>
+    <link rel="stylesheet" href="~/css/VacationCard.css" />
+    @{
+        ViewData["Title"] = $"{Model.UserName} info";
+    }
+</head>
+
+
+<div class="vacation-info @Model.SelectedRole">
+    <div class="col-md-8">
+        <h2 class="text-white text-uppercase"><strong>Name: </strong>@Model.UserName</h2>
+        <p class="text-white text-uppercase"><strong class="text-white text-uppercase">Email: </strong>@Model.Email</p>
+        <p class="text-white">
+            <span class="badge bg-primary">@Model.SelectedRole</span>
+        </p>
+    </div>
+</div>

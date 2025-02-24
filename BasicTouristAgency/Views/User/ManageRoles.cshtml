@@ -1,49 +1,71 @@
-﻿@model IEnumerable<BasicTouristAgency.ViewModel.UsersRoles>
+﻿@using Microsoft.AspNetCore.Identity
+@model BasicTouristAgency.ViewModel.PaginationViewModel<User>
+
+@inject UserManager<User> UserManager;
 
 @{
-    ViewData["Title"] = "Manage User Roles";
+    ViewData["Title"] = "Show all users";
 }
 
-<h2>Manage User Roles</h2>
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-success">
+        @ViewBag.Message
+    </div>
+}
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>User</th>
-            <th>Email</th>
-            <th>Current Role</th>
-            <th>Change Role</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model)
-        {
-            <tr>
-                <td>@user.UserName</td>
-                <td>@user.Email</td>
-                <td>@user.SelectedRole</td>
-                <td>
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <form asp-action="UpdateUserRole" method="post">
-                            <input type="hidden" name="SelectedUser" value="@user.SelectedUser" />
-                            <select name="SelectedRole" class="form-control">
-                                @foreach (var role in user.Roles)
-                                {
-                                    <option value="@role.Name">@role.Name</option>
-                                }
-                            </select>
-                            <button type="submit" class="btn btn-primary mt-2">Update</button>
-                        </form>
-                    }
-                    else
-                    {
-                        <p><strong> You do not have permission to change roles.</strong></p>
-                    }
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Message"]
+    </div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
 
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<form asp-action="ManageRole" asp-controller="User" method="get">
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-3 m-2">
+                <label for="firstName" class="form-label"></label>
+                <input type="text" class="form-control" name="firstName" id="firstName" value="@Context.Request.Query["firstName"]" placeholder="Please enter first name" />
+            </div>
+            <div class="col-md-3 m-2">
+                <label for="lastName" class="form-label"></label>
+                <input type="text" class="form-control" name="lastName" id="lastName" value="@Context.Request.Query["lastName"]" placeholder="Please enter last name" />
+            </div>
+            <div class="col-md-3 m-2">
+                <label for="email" class="form-label"></label>
+                <input type="text" class="form-control" name="email" id="email" value="@Context.Request.Query["email"]" placeholder="Please enter email" />
+            </div>
+            <div class="col-md-1 m-2">
+                <button type="submit" class="btn btn-primary btn-sm">Search</button>
+            </div>
+            <div class="col-md-1 m-2">
+                <a href="@Url.Action("ManageRole","User")" class="btn btn-warning btn-sm">Reset</a>
+            </div>
+
+        </div>
+    </div>
+</form>
+
+<div class="vacation-list mt-5">
+    @foreach (User singleUser in Model.Collection)
+    {
+        @await Html.PartialAsync("_UserAdminCard", singleUser, new ViewDataDictionary(ViewData) {  {"ShowRoleLink", true} ,{"ShowEditLink", false }, { "ShowDeleteLink", false } })
+
+    }
+</div>
+
+
+@await Html.PartialAsync("_PaginationUsers", Model)

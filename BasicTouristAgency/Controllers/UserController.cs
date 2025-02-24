@@ -36,113 +36,123 @@ namespace BasicTouristAgency.Controllers
             return View(user);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Profile(UsersRoles usersRoles)
+
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ManageRoles(string firstName,string lastName, string email, int page = 1)
         {
-            Console.WriteLine("Profie post method called");
+            var users = _userManager.Users.AsQueryable();
 
-            if (string.IsNullOrEmpty(usersRoles.SelectedUser) || string.IsNullOrEmpty(usersRoles.SelectedRole))
+            if (!string.IsNullOrEmpty(firstName))
             {
-                ModelState.AddModelError("", "You must select both a user and a rode");
-                return RedirectToAction("Profile");
+                users = users.Where(u => u.FirstName.Contains(firstName.Trim()));
             }
 
-            var user = await _userManager.FindByIdAsync(usersRoles.SelectedUser);
-            if (user == null)
+            if (!string.IsNullOrEmpty(lastName))
             {
-                ModelState.AddModelError("", "User not found");
-                return RedirectToAction("Profile");
+                users = users.Where(u => u.FirstName.Contains(lastName.Trim()));
             }
 
-            var roleExists = await _roleManager.RoleExistsAsync(usersRoles.SelectedRole);
-            if (!roleExists)
+            if (!string.IsNullOrEmpty(email))
             {
-                ModelState.AddModelError("", "Role does not exist");
-                return RedirectToAction("Profile");
-            }
 
-            var currentRoles = await _userManager.GetRolesAsync(user);
-            if(currentRoles.Any())
-            {
-                foreach (var role in currentRoles)
+                var user = await _userManager.Users.SingleOrDefaultAsync(u => u.Email == email.Trim());
+
+                if (user == null)
                 {
-                    await _userManager.RemoveFromRoleAsync(user, role);
-
+                    return View("NotFound");
                 }
-            }
-           
-            if(!await _userManager.IsInRoleAsync(user,usersRoles.SelectedRole))
-            {
-                var result = await _userManager.AddToRoleAsync(user, usersRoles.SelectedRole);
 
-                if (result.Succeeded)
+                PaginationViewModel<User> singleUserPagination = new PaginationViewModel<User>
                 {
-                    TempData["Success"] = "Role updated succesfully";
-                }
-                else
-                {
-                    TempData["Error"] = "Failed to update role";
-                }
+                    TotalCount = 1,
+                    CurrentPage = 1,
+                    PageSize = 1,
+                    Collection = new List<User> { user }
+                };
+                return View(singleUserPagination);
             }
-           
 
-            else
+            PaginationViewModel<User> pgvmUser = new ViewModel.PaginationViewModel<User>();
+
+            pgvmUser.TotalCount = users.Count();
+            pgvmUser.CurrentPage = page;
+            pgvmUser.PageSize = 5;
+
+            users = users.Skip(pgvmUser.PageSize * (pgvmUser.CurrentPage - 1)).Take(pgvmUser.PageSize);
+            pgvmUser.Collection = users;
+
+
+            Dictionary<string, string> userRoles = new Dictionary<string, string>();
+            foreach (var user in pgvmUser.Collection)
             {
-                TempData["Error"] = "User already has this role";
-                return RedirectToAction("Profile");
+                var roles = await _userManager.GetRolesAsync(user);
+                userRoles[user.Id] = roles.Any() ? roles.First() : "Tourist";
             }
+            ViewBag.UserRoles = userRoles;
 
-           
-            return RedirectToAction("Profile");
+            return View(pgvmUser);
+
         }
 
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> ManageRoles()
+        [HttpGet]
+        [Authorize(Roles ="Admin")]
+
+        public async Task<IActionResult> ManageRole(string id )
         {
-            var users = _userManager.Users.ToList();
-            var roles = _roleManager.Roles.ToList();
-
-            var userRoles = new List<UsersRoles>();
-
-            foreach (User user in users)
+            if (string.IsNullOrEmpty(id))
             {
-                var userRoleList = await _userManager.GetRolesAsync(user);
-                var userRole = userRoleList.FirstOrDefault();
 
-                userRoles.Add(new UsersRoles
-                {
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    SelectedRole = userRole,
-                    Users = users,
-                    Roles = roles,
-                    SelectedUser = user.Id
-                });
+                TempData["Error"] = "Invalid user id";
+                return RedirectToAction("ManageRoles");
             }
 
-            return View(userRoles);
+            var user = await _userManager.FindByIdAsync(id);
+            if(user == null)
+            {
+                TempData["Error"] = "User not found";
+                return RedirectToAction("ManageRoles");
+            }
+
+            var roles = await _roleManager.Roles.ToListAsync();
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+
+            ManageRoleViewModel mrvm = new ManageRoleViewModel();
+
+            mrvm.UserId = user.Id;
+            mrvm.UserName = user.UserName;
+            mrvm.Email = user.Email;
+            mrvm.AvailableRoles = roles.Select(r => r.Name).ToList();
+            mrvm.SelectedRole = userRoles.FirstOrDefault();
+            
+            return View(mrvm);
+
         }
+
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateUserRole(UsersRoles model)
+        [AutoValidateAntiforgeryToken]
+        public async Task<IActionResult> UpdateManageRole(string userId, string SelectedRole)
         {
-            Console.WriteLine("UpdateUserRole called!");
+            
 
-            if (string.IsNullOrEmpty(model.SelectedUser) || string.IsNullOrEmpty(model.SelectedRole))
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(SelectedRole))
             {
                 TempData["Error"] = "Invalid user or role selected!";
                 return RedirectToAction("ManageRoles");
             }
 
-            var user = await _userManager.FindByIdAsync(model.SelectedUser);
+            var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
                 TempData["Error"] = "User not found!";
                 return RedirectToAction("ManageRoles");
             }
 
-            var roleExists = await _roleManager.RoleExistsAsync(model.SelectedRole);
+            var roleExists = await _roleManager.RoleExistsAsync(SelectedRole);
             if (!roleExists)
             {
                 TempData["Error"] = "Role does not exist!";
@@ -154,11 +164,11 @@ namespace BasicTouristAgency.Controllers
             await _userManager.RemoveFromRolesAsync(user, currentRoles);
 
             
-            var result = await _userManager.AddToRoleAsync(user, model.SelectedRole);
+            var result = await _userManager.AddToRoleAsync(user, SelectedRole);
 
             if (result.Succeeded)
             {
-                TempData["Success"] = $"Role for {user.UserName} updated to {model.SelectedRole}!";
+                TempData["Success"] = $"Role for {user.UserName} updated to {SelectedRole}!";
             }
             else
             {
