@@ -17,7 +17,7 @@
               endDate = Context.Request.Query["endDate"], 
               vacType = Context.Request.Query["vacType"],
               sortBy = Context.Request.Query["sortBy"],
-              descending = Context.Request.Query["descending"] })" class="btn btn-primary-pagination">Previuos</a>
+              orderByParams = Context.Request.Query["orderByParams"] })" class="btn btn-primary-pagination">Previuos</a>
     }
 
     @for (int i= 1; i <= Model.TotalPages; i++ )
@@ -33,7 +33,7 @@
               endDate = Context.Request.Query["endDate"],
               vacType = Context.Request.Query["vacType"],
               sortBy = Context.Request.Query["sortBy"],
-              descending = Context.Request.Query["descending"]  })" class="btn disabled-pagination">@i</a>
+              orderByParams = Context.Request.Query["orderByParams"]  })" class="btn disabled-pagination">@i</a>
         }
 
         else
@@ -47,7 +47,7 @@
               endDate = Context.Request.Query["endDate"],
               vacType = Context.Request.Query["vacType"],
               sortBy = Context.Request.Query["sortBy"],
-              descending = Context.Request.Query["descending"]  })" class="btn btn-warning-pagination">@i</a>
+              orderByParams = Context.Request.Query["orderByParams"]  })" class="btn btn-warning-pagination">@i</a>
         }
     }
     @if (Model.HasNext)
@@ -61,6 +61,6 @@
               endDate = Context.Request.Query["endDate"],
               vacType = Context.Request.Query["vacType"],
               sortBy = Context.Request.Query["sortBy"],
-              descending = Context.Request.Query["descending"] })" class="btn btn-secondary-pagination">Next</a>
+              orderByParams = Context.Request.Query["orderByParams"] })" class="btn btn-secondary-pagination">Next</a>
     }
 </nav>

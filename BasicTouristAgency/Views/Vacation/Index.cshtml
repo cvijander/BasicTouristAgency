@@ -26,12 +26,6 @@
     </div>
 }
 
-@{
-    var sortBy = Context.Request.Query["sortBy"].ToString();
-    var startDateSelected = sortBy == "StartDate" ? "selected=\"selected\"" : "";
-    var endDateSelected = sortBy == "EndDate" ? "selected=\"selected\"" : "";
-    var priceSelected = sortBy == "Price" ? "selected=\"selected\"" : "";
-}
 
 
     <form asp-action="Index" asp-controller="Vacation" method="get">
