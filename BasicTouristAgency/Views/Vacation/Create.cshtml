@@ -34,7 +34,7 @@
 
             <div class="form-group mb-3">
                 <label asp-for="VacationDescription" class="form-label"></label>
-                <input type="text" asp-for="VacationDescription" class="form-control" maxlength="450" required placeholder="Enter vacation description" />
+                <textarea asp-for="VacationDescription" class="form-control" maxlength="450" required placeholder="Enter vacation description" rows="4"/></textarea>
                 <span asp-validation-for="VacationDescription" class="text-danger"></span>
             </div>
 

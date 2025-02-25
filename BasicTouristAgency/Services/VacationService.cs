@@ -157,10 +157,7 @@ namespace BasicTouristAgency.Services
             return _dbContext.Vacations.Find(id);
         }
 
-        public List<SelectListItem> GetVacationTypes()
-        {
-            return VacationUtils.GetVacationTypes();
-        }
+        
 
         public void UpdateVacation(Vacation vacation)
         {

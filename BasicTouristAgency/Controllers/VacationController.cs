@@ -30,7 +30,7 @@ namespace BasicTouristAgency.Controllers
         public IActionResult Index(string message,int? minPrice, int? maxPrice, string vacationName, DateTime? startDate, DateTime? endDate, Vacation.VacationType? vacType, string sortBy = "StartDate", bool descending = false, int page = 1)
         {
             ViewBag.Message = message;
-            ViewBag.VacationTypes = _unitOfWork.VacationService.GetVacationTypes();
+            ViewBag.VacationTypes = VacationUtils.GetVacationTypes();
 
             var vacations = _unitOfWork.VacationService.GetAllFilteredVacation(minPrice, maxPrice, vacationName, startDate, endDate, vacType, sortBy, descending);
 
@@ -58,6 +58,7 @@ namespace BasicTouristAgency.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewBag.VacationTypes = VacationUtils.GetVacationTypes();          
@@ -68,12 +69,13 @@ namespace BasicTouristAgency.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
+        [AutoValidateAntiforgeryToken]
         public IActionResult Create(Vacation vacation)
         { 
             
             if(!ModelState.IsValid)
             {
-                ViewBag.VacationTypes = _unitOfWork.VacationService.GetVacationTypes();
+                ViewBag.VacationTypes = VacationUtils.GetVacationTypes();
                 return View("Create",vacation);
             }
 
@@ -82,12 +84,12 @@ namespace BasicTouristAgency.Controllers
                 _unitOfWork.VacationService.CreateVacation(vacation);
                 _unitOfWork.SaveChanges();
 
-                 
-                return RedirectToAction("Index", new { message = "Vacation succesfulu created" });
+                TempData["Success"] = "Vacation succesfulu created. ";
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                ViewBag.ErrorMessage = "An error occured while creating vacation";
+                TempData["Error"] = "An error occurred while creating the vacation.";
                 _emailSender.SendEmailAsync("cvija85@gmail.com", "There is an error", "An error occured while creating vacation");
                 return View("Create", vacation);
             }                   
@@ -104,16 +106,23 @@ namespace BasicTouristAgency.Controllers
             Console.WriteLine($"Roles: {string.Join(", ", User.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(c => c.Value))}");
             Console.WriteLine("==============================================");
 
+            if (id <= 0)
+            {
+                TempData["Error"] = "Vacation Id not found.";
+                return RedirectToAction("NotFound","Home");
+            }
+
             Vacation vacation = _unitOfWork.VacationService.GetVacationById(id);
 
             if(vacation == null)
             {
+                TempData["Error"] = "Vacation not found.";
                 _emailSender.SendEmailAsync("cvija85@gmail.com", "There is an error not found", "Not found");
-                return NotFound();
+                return RedirectToAction ("NotFound","Home");
             }
 
 
-            ViewBag.VacationTypes = _unitOfWork.VacationService.GetVacationTypes();
+            ViewBag.VacationTypes = VacationUtils.GetVacationTypes();
             return View(vacation);
         }
 
@@ -124,7 +133,7 @@ namespace BasicTouristAgency.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.VacationTypes = _unitOfWork.VacationService.GetVacationTypes();
+                ViewBag.VacationTypes = VacationUtils.GetVacationTypes();
                  
                 return View("Edit", vacation);
             }
@@ -150,14 +159,15 @@ namespace BasicTouristAgency.Controllers
                 {
                     TempData["Message"] = "Vacation detials succesfully updated";
                 }
+               
+                return RedirectToAction("Index" );
 
-                return RedirectToAction("Index" , new { message = "Vacation sucesfully updated"});
             }
             catch (Exception ex )
             {
-                ViewBag.ErrorMessage = "An error arrived during update vacation";
+                TempData["Error"] = "An error arrived during update vacation";
 
-                ViewBag.VacationTypes = _unitOfWork.VacationService.GetVacationTypes();
+                ViewBag.VacationTypes = VacationUtils.GetVacationTypes();
 
                 return View("Edit", vacation);
                 
@@ -169,10 +179,17 @@ namespace BasicTouristAgency.Controllers
         [HttpGet]
         public IActionResult Delete (int id)
         {
-            Vacation vacation = _unitOfWork.VacationService.GetVacationById(id);
-            if(vacation == null)
+            if (id <= 0)
             {
-                return NotFound();
+                TempData["Error"] = "vacation id not found";
+                return RedirectToAction("NotFound", "Home");
+            }
+
+            Vacation vacation = _unitOfWork.VacationService.GetVacationById(id);
+            if (vacation == null)
+            {
+                TempData["Error"] = "Vacation not found";
+                return RedirectToAction("NotFound", "Home");
             }
 
             return View(vacation);

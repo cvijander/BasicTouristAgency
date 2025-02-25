@@ -15,13 +15,13 @@
 
             <div class="form-group mb-3">
                 <label asp-for="VacationName" class="form-label"></label>
-                <input type="text" asp-for="VacationName" class="form-control" required />
+                <input type="text" asp-for="VacationName" class="form-control" required maxlength="50" />
                 <span asp-validation-for="VacationName" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
                 <label asp-for="VacationDescription" class="form-label"></label>
-                <textarea asp-for="VacationDescription" class="form-control" maxlength="450" required></textarea>
+                <textarea asp-for="VacationDescription" class="form-control" maxlength="450" required rows="4"></textarea>
                 <span asp-validation-for="VacationDescription" class="text-danger"></span>
             </div>
 

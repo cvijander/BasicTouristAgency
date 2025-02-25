@@ -36,9 +36,15 @@ namespace BasicTouristAgency.Controllers
         {
             if (statusCode == 404)
             {
-                return View("NotFound"); // Prikazuje prilagođenu stranicu
+                return View("NotFound"); 
             }
             return View("Error");
+        }
+
+        public IActionResult NotFound()
+        {
+            TempData.Keep("Error");
+            return View("NotFound"); 
         }
 
         public IActionResult TestNotFound()

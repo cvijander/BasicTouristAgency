@@ -43,7 +43,7 @@
             <p class="text-white"><strong class="text-white">Start date: </strong> @Model.StartDate.ToShortDateString()</p>
             <p class="text-white"><strong class="text-white">Ends date: </strong> @Model.EndDate.ToShortDateString()</p>
             <p class="text-white"><strong class="text-white">Price:</strong> @Model.Price.ToString("C")</p>
-            <p class="text-white"><strong class="text-white">Type: </strong> @BasicTouristAgency.Util.Helpers.EnumHelper.GetDisplayName(Model.Type)</p>
+            <p class="text-white"><strong class="text-white">Type: </strong> @BasicTouristAgency.Util.Helpers.VacationUtils.GetVacationTypeDisplayName(Model.Type)</p>
         </div>
         <div class="col-12 col-md-2">
             <div class="button-display-vacation">
