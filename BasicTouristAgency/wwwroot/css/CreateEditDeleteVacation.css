@@ -4,6 +4,9 @@
     padding: 20px;
 }
 
+body {
+    background-color: #F4F1E1;
+}
 .card {
     border-radius: 15px;
     background-color: #ffffff;

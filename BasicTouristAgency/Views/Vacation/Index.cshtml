@@ -3,12 +3,7 @@
     @{
         ViewData["Title"] = "Show all vacations";
     }
-@if (ViewBag.Message != null)
-{
-    <div class="alert alert-success">
-        @ViewBag.Message
-    </div>
-}
+
 
 @if(TempData["Message"] != null )
 {
@@ -31,47 +26,117 @@
     </div>
 }
 
+@{
+    var sortBy = Context.Request.Query["sortBy"].ToString();
+    var startDateSelected = sortBy == "StartDate" ? "selected=\"selected\"" : "";
+    var endDateSelected = sortBy == "EndDate" ? "selected=\"selected\"" : "";
+    var priceSelected = sortBy == "Price" ? "selected=\"selected\"" : "";
+}
+
 
     <form asp-action="Index" asp-controller="Vacation" method="get">
         <div class="form-group">
-            <label for="minPrice" class="form-label">Min price: </label>
-            <input type="number" class="form-control" name="minPrice" id="minPrice" value="@Context.Request.Query["minPrice"]" min="0" step="1" placeholder="Please enter minimal price (lower limit)"/>
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="minPrice" class="form-label">Min price: </label>
+                        <input type="number" class="form-control" name="minPrice" id="minPrice" value="@Context.Request.Query["minPrice"]" min="0" step="1" placeholder="Please enter minimal price (lower limit)" />
+                     </div>
+                </div>                  
+         
+                 <div class="col-md-4">
+                     <div class="form-group">
+                        <label for="maxPrice" class="form-label">Max price: </label>
+                        <input type="number" class="form-control" name="maxPrice" id="maxPrice" value="@Context.Request.Query["maxPrice"]" min="0" step="1" placeholder="Please enter maximal price (upper limit)" />
+                     </div>
+                 </div> 
 
-            <label for="maxPrice" class="form-label">Max price: </label>
-            <input type="number" class="form-control" name="maxPrice" id="maxPrice" value="@Context.Request.Query["maxPrice"]" min="0" step="1" placeholder="Please enter maximal price (upper limit)" />
+                 <div class="col-md-4">
+                     <div class="form-group">
+                        <label for="vacationName" class="form-label">Name:</label>
+                        <input type="text" class="form-control" name="vacationName" id="vacationName" value="@Context.Request.Query["vacationName"]" placeholder="Enter name" />
+                     </div>
+                 </div>                   
+            </div>
 
-            <label for="vacationName" class="form-label">Name:</label>
-            <input type="text" class="form-control" name="vacationName" id="vacationName" value="@Context.Request.Query["vacationName"]" placeholder="Enter name" />
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="startDate" class="form-label">Start Date:</label>
+                        <input type="date" class="form-control" name="startDate" id="startDate" value="@Context.Request.Query["startDate"]" />
+                    </div>                   
+                </div>
 
-            <label for="startDate" class="form-label">Start Date:</label>
-            <input type="date" class="form-control" name="startDate" id="startDate" value="@Context.Request.Query["startDate"]" />
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="endDate" class="form-label">End Date:</label>
+                        <input type="date" class="form-control" name="endDate" id="endDate" value="@Context.Request.Query["endDate"]" />
+                    </div>                    
+                </div>
+            </div>
 
-            <label for="endDate" class="form-label">End Date:</label>
-            <input type="date" class="form-control" name="endDate" id="endDate" value="@Context.Request.Query["endDate"]" />
+            <div class="row mt-4">
+                @* <div class="col-md-6"> *@
+                @*     <div class="form-group"> *@
+                @*         <label for="vacType" class="form-label">Vacation type: </label> *@
+                @*         <select class="form-control" name="vacType" id="vacType" asp-items="ViewBag.VacationTypes"> *@
+                @*             <option value="">--Select type --</option>    *@
+                @*         </select> *@
+                @*     </div>                    *@
+                @* </div> *@
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="vacType" class="form-label">Vacation type: </label>
+                    <select class="form-control" name="vacType" id="vacType" >
+                        <option value="" >--Select vacation type --</option>
 
-             
-            <label for="vacType" class="form-label">Vacation type: </label>
-            <select class="form-control" name="vacType" id="vacType">
-                <option value="">--Select type --</option>
-                    @foreach(var type in (List<SelectListItem>)ViewBag.VacationTypes)
-                        {
-                           <option value="@type.Value" selected="@(Context.Request.Query["vacType"].ToString() == type.Value ? "selected" : null)">@type.Text</option>
-                        }
-            </select>
+                        @foreach(var item in (List<SelectListItem>)ViewBag.VacationTypes)
+                            {
+                                @if(Context.Request.Query["vacType"] == item.Value)
+                                {
+                                    <option value="@item.Value" selected>@item.Text</option>
+                                }
+                                else 
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }                                
+                            }
+                    </select>                    
+                </div>
+            </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="sortBy" class="form-label">Sort by</label>
+                        <select class="form-control" name="sortBy" id="sortBy">
+                            <option value="StartDate" selected="@(Context.Request.Query["sortBy"] == "StartDate" ? "selected": null )">Start Date</option>
+                            <option value="EndDate" selected="@(Context.Request.Query["sortBy"] == "EndDate" ? "selected" : null )">End Date</option>
+                            <option value="Price" selected="@(Context.Request.Query["sortBy"] == "Price" ? "selected" : null)">Price</option>
+                    </select>
+                    </div>                   
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-12 d-flex justify-content-center">
+                    <div class="form-group">
+                        <label class="form-check-label m-2">
+                            <input type="checkbox" name="orderByParams" value="true" class="form-check-input mr-2" @(Context.Request.Query["orderByParams"] == "true" ? "checked" : "") /> Check this if  you want a descending order
+                        </label>
+                    </div>                   
+                </div>
+            </div>
 
-            <label for="sortBy" class="form-label">Sort by</label>
-            <select class="form-control" name="sortBy" id="sortBy">
-                <option value="StartDate" selected="@(Context.Request.Query["sortBy"] == "StartDate" ? "selected": null )">Start Date</option>
-                <option value="EndDate" selected ="@(Context.Request.Query["sortBy"] == "EndDate" ? "selected" : null )">End Date</option>
-                <option value="Price" selected ="@(Context.Request.Query["sortBy"] == "Price" ? "selected" : null)">Price</option>
-            </select>
+            <div class="row mt-4 mb-5">
+                <div class="col-md-5">                    
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+                <div class="col-md-2">
 
-            <label class="form-check-label">
-                <input type="checkbox" name="descending" value="true" class="form-check-input" @(Context.Request.Query["secending"] == "true" ? "checked": "") />Descending order
-            </label>
-        </div>
-        <button type="submit" class="btn btn-primary">Search</button>        
-        <a href="@Url.Action("Index","Vacation")" class="btn btn-secondary">Clear all filters</a>
+                </div>
+                <div class="col-md-5">
+                <a href="@Url.Action("Index","Vacation")" class="btn btn-secondary">Clear all filters</a>
+                </div>
+            </div>            
+        </div>                    
     </form>
 
     <div class="vacation-list">
@@ -85,3 +150,21 @@
     </div>
 
     @await Html.PartialAsync("_PaginationVacation", Model)
+
+        <style>
+    .btn-primary {
+        background-color: #D5BE91 !important;
+        border-color: #D5BE91 !important;
+    }
+
+    .btn-primary:hover {
+        background-color: #A0522D !important;
+        border-color: #A0522D !important;
+        }
+
+    
+     body {
+         background-color: #F4F1E1;
+    }
+</style>
+        </style>

@@ -35,7 +35,8 @@
     <div class="row">
         <div class="col-md-10">
             <h2 class="text-white text-uppercase"><strong>Name: </strong> @Model.VacationName</h2>
-            @if (ViewData.ContainsKey("ShowVacationId") && (bool)ViewData["ShowVacationId"])
+            @if (SignInManager.IsSignedIn(User))
+            //@if (ViewData.ContainsKey("ShowVacationId") && (bool)ViewData["ShowVacationId"])
             {
                 <h3 class="text-white"><strong>Id: </strong> @Model.VacationId</h3>
             }
@@ -107,4 +108,15 @@
 
 
 
-   
+
+    <style>
+        .btn-primary {
+            background-color: #D5BE91 !important;
+            border-color: #D5BE91 !important;
+        }
+
+        .btn-primary:hover {
+            background-color: #A0522D !important;
+                border-color: #A0522D !important;
+            }
+   </style>

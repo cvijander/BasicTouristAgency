@@ -7,7 +7,7 @@ namespace BasicTouristAgency.Services
     {
         IEnumerable<Vacation> GetAllVacations();
 
-        IEnumerable<Vacation> GetAllFilteredVacation(int? minPrice, int? maxPrice, string vacationName, DateTime? startDate, DateTime? endDate, Vacation.VacationType? type, string sortBy = "StartDate", bool descending = false);
+        IEnumerable<Vacation> GetAllFilteredVacation(int? minPrice, int? maxPrice, string vacationName, DateTime? startDate, DateTime? endDate, Vacation.VacationType? type, string sortBy = "StartDate", bool orderByParams = false);
 
         Vacation GetVacationById(int id);
 

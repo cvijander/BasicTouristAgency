@@ -27,15 +27,12 @@ namespace BasicTouristAgency.Controllers
 
 
         [HttpGet]
-        public IActionResult Index(string message,int? minPrice, int? maxPrice, string vacationName, DateTime? startDate, DateTime? endDate, Vacation.VacationType? vacType, string sortBy = "StartDate", bool descending = false, int page = 1)
+        public IActionResult Index(int? minPrice, int? maxPrice, string vacationName, DateTime? startDate, DateTime? endDate, Vacation.VacationType? vacType, string sortBy = "StartDate", bool orderByParams = false, int page = 1)
         {
-            ViewBag.Message = message;
+            
             ViewBag.VacationTypes = VacationUtils.GetVacationTypes();
 
-            var vacations = _unitOfWork.VacationService.GetAllFilteredVacation(minPrice, maxPrice, vacationName, startDate, endDate, vacType, sortBy, descending);
-
-
-
+            var vacations = _unitOfWork.VacationService.GetAllFilteredVacation(minPrice, maxPrice, vacationName, startDate, endDate, vacType, sortBy, orderByParams);
 
            PaginationViewModel<Vacation> pgvm = new  ViewModel.PaginationViewModel<Vacation>();            
             
@@ -201,23 +198,32 @@ namespace BasicTouristAgency.Controllers
 
         public IActionResult DeleteConfirmed(int id)
         {
+            if (id <= 0)
+            {
+                TempData["Error"] = "vacation id not found";
+                return RedirectToAction("NotFound", "Home");
+            }
+
             try
             {
                 Vacation vacation = _unitOfWork.VacationService.GetVacationById(id);
                 if(vacation == null)
                 {
-                    return NotFound();
+                    TempData["Error"] = "Vacation not found";
+                    return RedirectToAction("NotFound", "Home");
                 }
 
                 _unitOfWork.VacationService.DeleteVacation(id);
                 _unitOfWork.SaveChanges();
 
-                return RedirectToAction("Index" , new { message = "Vacation succesfuli deleted"});
+                TempData["Message"] = "Vacation succesfuli deleted";
+
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                ViewBag.ErrorMessage = "An error occured while deleting the vacation";
-                return RedirectToAction("Index", new { message = "Failed to delete vacation" });
+                TempData["Error"] = "An error occured while deleting the vacation";
+                return RedirectToAction("Index");
                 
             }
         }

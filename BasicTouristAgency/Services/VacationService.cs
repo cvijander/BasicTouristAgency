@@ -39,7 +39,7 @@ namespace BasicTouristAgency.Services
             }
         }
 
-        public IEnumerable<Vacation> GetAllFilteredVacation(int? minPrice, int? maxPrice, string vacationName, DateTime? startDate, DateTime? endDate, Vacation.VacationType? vacType, string sortBy = "StartDate", bool descending = false)
+        public IEnumerable<Vacation> GetAllFilteredVacation(int? minPrice, int? maxPrice, string vacationName, DateTime? startDate, DateTime? endDate, Vacation.VacationType? vacType, string sortBy = "StartDate", bool orderByParams = false)
 
         {
             var vacations = _dbContext.Vacations.AsQueryable();
@@ -55,7 +55,7 @@ namespace BasicTouristAgency.Services
 
             if (!string.IsNullOrEmpty(vacationName))
             {
-                vacations = vacations.Where(v => v.VacationName.ToLower().Trim().Contains(vacationName.ToLower().Trim()));
+                vacations = vacations.Where(v => v.VacationName.Contains(vacationName.Trim()));
             }
 
             if (startDate.HasValue)
@@ -82,19 +82,43 @@ namespace BasicTouristAgency.Services
             {
                 case "Price":
                     {
-                        vacations = descending ? vacations.OrderByDescending(v => v.Price) : vacations.OrderBy(v => v.Price);
+                        if(orderByParams)
+                        {
+                            vacations = vacations.OrderByDescending(v => v.Price);
+                        }
+                        else
+                        {
+                            vacations = vacations.OrderBy(v => v.Price);
+                        }
+                        
                     }
                     break;
 
                 case "EndDate":
                     {
-                        vacations = descending ? vacations.OrderByDescending(v => v.EndDate) : vacations.OrderBy(v => v.EndDate);
+                        if(orderByParams)
+                        {
+                            vacations = vacations.OrderByDescending(v => v.EndDate);
+                        }
+                        else
+                        {
+                            vacations = vacations.OrderBy(v => v.EndDate);
+                        }
+                        
                     }
                     break;
 
                 default:
                     {
-                        vacations = descending ? vacations.OrderByDescending(v => v.StartDate) : vacations.OrderBy(v => v.StartDate);
+                        if(orderByParams)
+                        {
+                            vacations = vacations.OrderByDescending(v => v.StartDate);
+                        }
+                        else
+                        {
+                            vacations = vacations.OrderBy(v => v.StartDate);
+                        }
+                        
                     }
                     break;
 
