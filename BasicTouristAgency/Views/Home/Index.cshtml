@@ -1,8 +1,82 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Welcome to Our Travel Agency";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="background-container">
+    <div class="overlay">
+        <h1 class="display-4">Welcome to Our Travel Agency</h1>
+
+        <div class="mt-4">
+            <a class="btn btn-secondary btn-lg btn-custom" asp-area="Identity" asp-page="/Account/Register">Register</a>
+            <a class="btn btn-info btn-lg btn-custom" asp-area="Identity" asp-page="/Account/Login">Login</a>
+            <a class="btn btn-primary btn-lg btn-custom" asp-controller="Home" asp-action="ViewVacations">View Vacations</a>
+        </div>
+    </div>
 </div>
+
+
+
+
+<style>
+    .overlay{
+        background:rgba(0,0,0,0.5);
+        padding:40px;
+        border-radius:10px;
+        text-align:center;
+        color:white;
+    }
+
+    .btn-custom {
+        width:250px;
+        padding:15px;
+        font-size: 18px;
+        margin: 15px 25px 0 25px;
+    }
+
+    .background-container {
+        position: relative;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 80vh;
+        background-image: url('/wwwroot/images/background-images/travel_agency_background.jpg');
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: cover;
+        background-attachment: fixed;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .btn-primary {
+        background-color: #D5BE91 !important;
+        border-color: #D5BE91 !important;
+    }
+
+        .btn-primary:hover {
+            background-color: #A0522D !important;
+            border-color: #A0522D !important;
+        }
+
+         .btn-secondary {
+        background-color: #00cc99  !important;
+        border-color: #00cc99 !important;
+    }
+
+        .btn-secondary:hover {
+            background-color: #004d39 !important;
+            border-color: #004d39 !important;
+        }
+
+             .btn-info {
+        background-color: #cccc00  !important;
+        border-color: #cccc00 !important;
+    }
+
+        .btn-info:hover {
+            background-color: #666600 !important;
+            border-color: #666600 !important;
+        }
+
+</style>

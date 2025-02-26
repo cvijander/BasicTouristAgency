@@ -1,6 +1,7 @@
 ﻿using BasicTouristAgency.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static BasicTouristAgency.Models.Reservation;
 
 namespace BasicTouristAgency.Services
 {
@@ -100,6 +101,34 @@ namespace BasicTouristAgency.Services
         public void UpdateReservation(Reservation reservation)
         {
             _dbContext.Reservations.Update(reservation);
+        }
+
+        public IEnumerable<Reservation> GetFilteredAllReservations(string searchUser, string vacName, string status)
+        {
+            var reservations = _dbContext.Reservations
+                    .Include(r=> r.User)
+                    .Include(r=> r.Vacation).AsQueryable();
+
+            Console.WriteLine($"Total Reservations Before Filtering: {reservations.Count()}");
+
+            if (!string.IsNullOrEmpty(searchUser))
+            {
+                reservations = reservations.Where(r => r.User.FirstName.Contains(searchUser.ToLower().Trim()));
+
+            }
+
+            if (!string.IsNullOrEmpty(vacName))
+            {
+
+                reservations = reservations.Where(r => r.Vacation.VacationName.Contains(vacName.ToLower().Trim()));
+            }
+
+            if (!string.IsNullOrEmpty(status) && Enum.TryParse(status, out ReservationStatus parsedStatus))
+            {
+                reservations = reservations.Where(r => r.Status == parsedStatus);
+            }
+
+            return reservations;
         }
     }
 }

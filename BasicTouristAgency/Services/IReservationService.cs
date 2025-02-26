@@ -22,6 +22,8 @@ namespace BasicTouristAgency.Services
 
         public IEnumerable<Reservation> GetFilteredMyReservations(string userId, string vacationName, string status);
 
+        public IEnumerable<Reservation> GetFilteredAllReservations(string searchUser, string vacationName, string status);
+
 
     }
 }

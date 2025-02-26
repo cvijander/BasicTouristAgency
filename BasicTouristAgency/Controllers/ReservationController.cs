@@ -31,26 +31,8 @@ namespace BasicTouristAgency.Controllers
         public IActionResult Index(string searchUser,string vacName,string status, int page = 1)
         {
 
-            var reservations = _unitOfWork.ReservationService.GetAllReservation();
-
-            Console.WriteLine($"Total Reservations Before Filtering: {reservations.Count()}");
-
-            if (!string.IsNullOrEmpty(searchUser))
-            {
-               reservations = reservations.Where(r => r.User.FirstName.ToLower().Trim().Contains(searchUser.ToLower().Trim()));
-                
-            }
-
-            if (!string.IsNullOrEmpty(vacName))
-            {
-               
-                reservations = reservations.Where(r => r.Vacation.VacationName.ToLower().Trim().Contains(vacName.ToLower().Trim()));
-            }
-
-            if (!string.IsNullOrEmpty(status) && Enum.TryParse(status, out ReservationStatus parsedStatus))
-            {
-                reservations = reservations.Where(r => r.Status == parsedStatus);
-            }
+            var reservations = _unitOfWork.ReservationService.GetFilteredAllReservations(searchUser,vacName,status);
+            
 
             PaginationViewModel<Reservation> pgvmReservation = new ViewModel.PaginationViewModel<Reservation>();
 

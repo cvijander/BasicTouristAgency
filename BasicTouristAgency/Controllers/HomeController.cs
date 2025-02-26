@@ -51,5 +51,20 @@ namespace BasicTouristAgency.Controllers
         {
             return View("NotFound");
         }
+
+        public IActionResult Login()
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        public IActionResult Register()
+        {
+            return RedirectToAction("Register", "Account");
+        }
+
+        public IActionResult ViewVacations()
+        {
+            return RedirectToAction("Index", "Vacation");
+        }
     }
 }
