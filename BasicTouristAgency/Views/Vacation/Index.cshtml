@@ -142,8 +142,10 @@
 
     }
     </div>
-
+    <di class="m-5">
     @await Html.PartialAsync("_PaginationVacation", Model)
+    </di>
+    
 
         <style>
     .btn-primary {
@@ -160,5 +162,25 @@
      body {
          background-color: #F4F1E1;
     }
+       
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+        .pagination a {
+            margin: 0 5px;
+            white-space: nowrap;
+        }
+
+    .pagination-container {
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+
+    .pagination {
+        display: inline-block;
+    }
 </style>
-        </style>

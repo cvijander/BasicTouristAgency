@@ -11,9 +11,17 @@
 @await Html.PartialAsync("_ReservationAdminCard",Model)
 
 
+<div class="row mt-5 mb-5">
+    <div class="col-md-6">
+        <a href="@Url.Action("MyReservations", "Reservation", new {id = @Model.UserId})" class="btn btn-primary">View my reservation</a>
+    </div>
+    <div class="col-md-6">        
+        <a href="@Url.Action("Index", "Vacation")" class="btn btn-secondary">Back to offers</a>
+    </div>
+</div>
 
-<a href="@Url.Action("Index", "Vacation")" class="btn btn-primary">Back to offers</a>
-<a href="@Url.Action("MyReservation", "Reservation", new {id = @Model.UserId})" class="btn btn-success">View my reservation</a> 
+
+
 
 
 <style>

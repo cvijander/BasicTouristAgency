@@ -4,28 +4,56 @@
         ViewData["Title"] = " My reservation";
     }
 
-
-
-<form method="get">
-    <input type="text" name="vacationName" placeholder="Search a vacation" value="@Context.Request.Query["vacationName"]" class="form-control" />    
-    <div class="col-md-3">
-        <select name="status" class="form-control">
-            <option value="">All Statuses</option>
-            @foreach (var status in Enum.GetValues(typeof(BasicTouristAgency.Models.Reservation.ReservationStatus)))
-            {
-                if (Context.Request.Query["status"] == status.ToString())
-                {
-                    <option value="@status" selected>@status</option>
-                }
-                else
-                {
-                    <option value="@status">@status</option>
-                }
-            }
-        </select>
+@if(TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
     </div>
+}
 
-    <button type="submit" class="btn btn-primary">Search</button>
+@if(TempData["Error"] != null)
+{
+<div class="alert alert-success">
+    @TempData["Error"]
+</div>
+}
+
+
+
+<form method="get" asp-action="MyReservations" asp-controller="Reservation">
+      
+    
+    <div class="row mt-5 mb-5">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="vacationName" class="form-label">Search a vacation: </label>
+                <input type="text" name="vacationName" placeholder="Search a vacation" value="@Context.Request.Query["vacationName"]" class="form-control" />
+            </div>
+
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="status" class="form-label">Chooese a status: </label>
+                <select name="status" class="form-control">
+                    <option value="">All Statuses</option>
+                    @foreach (var status in Enum.GetValues(typeof(BasicTouristAgency.Models.Reservation.ReservationStatus)))
+                    {
+                        if (Context.Request.Query["status"] == status.ToString())
+                        {
+                            <option value="@status" selected>@status</option>
+                        }
+                        else
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    }
+                </select>
+            </div>            
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>       
+    </div>   
 </form>
 
 <h2>My Reservation</h2>

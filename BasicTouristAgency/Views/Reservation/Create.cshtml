@@ -4,17 +4,17 @@
     ViewData["Title"] = "Make a reservation";
 }
 
-@if (ViewBag.Message != null)
+@if (TempData["Success"] != null)
 {
     <div class="alert alert-success">
-        @ViewBag.Message
+        @TempData["Success"]
     </div>
 }
 
-@if (ViewBag.ErrorMessage != null)
+@if (TempData["Error"] != null)
 {
     <div class="alert alert-danger">
-        @ViewBag.ErrorMessage
+        @TempData["Error"]
     </div>
 }
 
@@ -45,22 +45,34 @@ else
     <input type="hidden" asp-for="UserId" />
     <input type="hidden" asp-for="VacationId" />
 
-    <div class="form-group">
-        <label asp-for="DateCreatedReservation" class="form-label">Reservation date</label>
-        <input asp-for="DateCreatedReservation" type="date" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-dd")" max="@Model.Vacation?.StartDate.ToString("yyyy-MM-dd")" />
-        <span asp-validation-for="DateCreatedReservation" class="text-danger"></span>
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="DateCreatedReservation" class="form-label">Reservation date</label>
+                <input asp-for="DateCreatedReservation" type="date" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-dd")" max="@Model.Vacation?.StartDate.ToString("yyyy-MM-dd")" />
+                <span asp-validation-for="DateCreatedReservation" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Status" class="form-label"></label>
+                <select asp-for="Status" class="form-control">
+                    <option value="Created" selected>Created</option>
+                </select>        
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div
+        </div>
     </div>
 
-    <div class="form-group">
-        <label asp-for="Status" class="form-label"></label>
-        <select asp-for="Status" class="form-control">
-            <option value="Created" selected>Created</option>
-        </select>        
-        <span asp-validation-for="Status" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Confirm reservation</button>
-    <a href="@Url.Action("Index","Vacation")" class="btn btn-danger">Cancel</a>
+    <div class="row  mt-5">
+        <div class="col-md-6">
+            <button type="submit" class="btn btn-primary btn-block">Confirm reservation</button>
+        </div>
+        <div class="col-md-6">
+            <a href="@Url.Action("Index","Vacation")" class="btn btn-danger btn-block">Cancel</a>
+        </div>
+    </div> 
+    
 </form>
 
 

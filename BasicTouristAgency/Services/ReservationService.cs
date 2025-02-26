@@ -1,4 +1,5 @@
 ﻿using BasicTouristAgency.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BasicTouristAgency.Services
@@ -12,15 +13,15 @@ namespace BasicTouristAgency.Services
             _dbContext = dbContext;
         }
 
-        public async Task<bool> CanUserReserveVacation(string userId, int vacationId)
+        public async Task<bool> AlredyUserReservedThisVacation(string userId, int vacationId)
         {
-            return !await _dbContext.Reservations
+            return await _dbContext.Reservations
                 .AnyAsync(r => r.UserId == userId && r.VacationId == vacationId);
         }
 
         public async Task<bool> CreateReservation(Reservation reservation)
         {
-            if (!await CanUserReserveVacation(reservation.UserId, reservation.VacationId))
+            if (await AlredyUserReservedThisVacation(reservation.UserId, reservation.VacationId))
             {
                 
                 return false;
@@ -79,12 +80,19 @@ namespace BasicTouristAgency.Services
 
             if(!string.IsNullOrEmpty(vacationName))
             {
-                reservations = reservations.Where(r => r.Vacation.VacationName.ToLower().Trim().Contains(vacationName.ToLower().Trim())).ToList();
+                vacationName = vacationName.ToLower().Trim();
+                reservations = reservations.Where(r => r.Vacation.VacationName.ToLower().Trim().Contains(vacationName)).ToList();
             }
 
             if(!string.IsNullOrEmpty(status))
             {
-                reservations = reservations.Where(r => r.Status.ToString().ToLower().Trim() == status.ToLower().Trim()).ToList();
+                Reservation.ReservationStatus statusEnum;
+                if(Enum.TryParse(status, true, out statusEnum))
+                {
+                    reservations = reservations.Where(r => r.Status == statusEnum).ToList();
+                }       
+                            
+                
             }
             return reservations;
         }

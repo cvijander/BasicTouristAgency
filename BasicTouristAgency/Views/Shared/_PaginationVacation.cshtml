@@ -1,15 +1,15 @@
 ﻿@model BasicTouristAgency.ViewModel.IPaginationViewModel<BasicTouristAgency.Models.Vacation>
 
 
-    <head>
+<head>
         <link rel="stylesheet" href="~/css/Pagination.css" />
-    </head>
+</head>
 
-    <nav class="Page-navigation">
-        @if (Model.HasPrevious)
+<nav class="Page-navigation">
+    @if (Model.HasPrevious)
     {
         <a href="@Url.Action("Index",new { 
-              page = Model.CurrentPage -1,
+              page = Model.CurrentPage-1,
               minPrice = Context.Request.Query["minPrice"],
               maxPrice = Context.Request.Query["maxPrice"],
               vacationName = Context.Request.Query["vacationName"],
@@ -19,6 +19,7 @@
               sortBy = Context.Request.Query["sortBy"],
               orderByParams = Context.Request.Query["orderByParams"] })" class="btn btn-primary-pagination">Previuos</a>
     }
+    
 
     @for (int i= 1; i <= Model.TotalPages; i++ )
     {
@@ -64,3 +65,25 @@
               orderByParams = Context.Request.Query["orderByParams"] })" class="btn btn-secondary-pagination">Next</a>
     }
 </nav>
+
+<style>
+    .pagination {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+        .pagination a {
+            margin: 0 5px;
+            white-space: nowrap;
+        }
+
+    .pagination-container {
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+
+    .pagination {
+        display: inline-block;
+    }
+</style>

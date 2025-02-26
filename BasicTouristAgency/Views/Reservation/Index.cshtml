@@ -5,6 +5,21 @@
         ViewData["Title"] = "All reservations";
     }
 
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Error"]
+    </div>
+}
+
+
     <form method="get">
         <input type="text" name="searchUser" placeholder="Serach nema" value="@Context.Request.Query["searchUser"]" class="form-control"/>
         <input type="text" name="vacName" placeholder="vacation nema" value="@Context.Request.Query["vacName"]" class="form-control" />

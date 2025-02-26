@@ -69,11 +69,18 @@ namespace BasicTouristAgency.Controllers
 
         public async Task<IActionResult> Create(int vacationId)
         {
+            if (vacationId <= 0)
+            {
+                TempData["Error"] = "Vacation id does not exists";
+                return RedirectToAction("NotFound", "Home");
+            }
+
             Vacation vacation = _unitOfWork.VacationService.GetVacationById(vacationId);
 
             if (vacation == null)
             {
-                return NotFound();
+                TempData["Error"] = "Vacation does not exists";
+                return RedirectToAction("NotFound", "Home");
             }
 
             var userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -117,30 +124,42 @@ namespace BasicTouristAgency.Controllers
 
             if (reservation.Vacation == null || reservation.VacationId == 0)
             {
-                ViewBag.ErrorMessage = "Vacation must be selected";
+                TempData["Error"] = "Vacation must be selected";
                 return View(reservation);
             }
 
 
-            var user = await _userManager.FindByIdAsync(reservation.UserId);
+            var userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userid))
+            {
+                return Unauthorized();
+            }
+
+            var user = await _userManager.FindByIdAsync(userid);
             if (user == null)
             {
-                ViewBag.ErrorMessage = "User not found";
-                return View(reservation);
+                return BadRequest("User not found in database");
             }
 
             reservation.User = user;
 
             if (DateTime.Today >= reservation.Vacation.StartDate)
             {
-                ModelState.AddModelError(nameof(reservation.DateCreatedReservation), "Reservations can only be made before the vacation begins.");
+                 TempData["Error"]= "Reservations can only be made before the vacation begins.";
+                return View(reservation);
             }
 
             if (reservation.DateCreatedReservation.Date < DateTime.Today)
             {
-                ModelState.AddModelError(nameof(reservation.DateCreatedReservation), "The reservation cannot be in the past.");
+                TempData["Error"] = "The reservation cannot be in the past.";
+                return View(reservation);
             }
 
+            if(reservation.DateCreatedReservation > reservation.Vacation.StartDate)
+            {
+                TempData["Error"] = "The reservation can not be after the start date";
+                return View(reservation);
+            }
 
             if (!ModelState.IsValid)
             {
@@ -155,12 +174,12 @@ namespace BasicTouristAgency.Controllers
                 return View("Create", reservation);
             }
 
-            bool canReserve = await _unitOfWork.ReservationService.CanUserReserveVacation(reservation.UserId, reservation.VacationId);
+            bool canReserve = await _unitOfWork.ReservationService.AlredyUserReservedThisVacation(reservation.UserId, reservation.VacationId);
 
-            if (!canReserve)
+            if (canReserve)
             {
                 Console.WriteLine("User already has a reservation! Showing error message...");
-                ViewBag.ErrorMessage = "You have already booked this vacation";
+                TempData["Error"] = "You have already booked this vacation";
                 return View("Create", reservation);
             }
 
@@ -176,7 +195,7 @@ namespace BasicTouristAgency.Controllers
             }
             catch (Exception ex)
             {
-                ViewBag.ErrorMessage = "An error occured while creating reservation";
+                TempData["Error"] = "An error occured while creating reservation";
                 _emailSender.SendEmailAsync("cvija85@gmail.com", "There is an error while createing reservation", "An error occured while creating reservation");
 
                 reservation.Vacation = _unitOfWork.VacationService.GetVacationById(reservation.VacationId);
@@ -194,6 +213,11 @@ namespace BasicTouristAgency.Controllers
             Console.WriteLine("Get confirm called");
             Console.WriteLine($"ReservationId {reservationId}");
 
+            if (reservationId <= 0)
+            {
+                TempData["Error"] = "Reservation id not found";
+                return RedirectToAction("NotFound", "Home");
+            }
 
             Reservation reservation = _unitOfWork.ReservationService.GetReservationById(reservationId);
 
@@ -247,38 +271,24 @@ namespace BasicTouristAgency.Controllers
 
 
         }
-
-        [HttpPost]
-        [Authorize(Roles = "Admin,Tourist")]
-        [ValidateAntiForgeryToken]
-        public IActionResult Confirm(Reservation reservation)
-        {
-            if (!ModelState.IsValid)
-            {
-                ViewData["Error"] = "There wa an error confirmig yopur reservation";
-                return View("Confirm", reservation);
-            }
-            _unitOfWork.ReservationService.CreateReservation(reservation);
-            _unitOfWork.SaveChanges();
-
-            ViewData["Message"] = "Reservation succesfulu confirmed";
-            return RedirectToAction("MyReservation", new { userId = reservation.UserId });
-        }
+                
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id)
         {
-            if(id == 0)
+            if(id <= 0)
             {
-                return NotFound();
+                TempData["Error"] = "Reservation id not found";
+                return  RedirectToAction("NotFound","Home");
             }
 
             var reservation = _unitOfWork.ReservationService.GetReservationById(id);
 
             if (reservation == null)
             {
-                return NotFound();
+                TempData["Error"] = "Reservation  not found";
+                return RedirectToAction("NotFound", "Home");
             }
 
             return View(reservation);
@@ -288,28 +298,37 @@ namespace BasicTouristAgency.Controllers
         [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
 
-        public async Task<IActionResult> Edit(int id, [Bind("ReservationId, Status")] Reservation reservation )
+        public async Task<IActionResult> Edit(int id, string status )
         {
-            if(id != reservation.ReservationId)
+            if(id <= 0 )
             {
-                Console.WriteLine("ID mismatch - request failed.");
-                return NotFound();
+                TempData["Error"] = "Reservati id not found";
+                return RedirectToAction("NotFound", "Home");
+            }
+                       
+
+            var reservation = _unitOfWork.ReservationService.GetReservationById(id);
+
+            if(reservation == null )
+            {
+                TempData["Error"] ="Reseration not found in database";
+                return RedirectToAction("NotFound", "Home");
             }
 
-            var existingReservation = _unitOfWork.ReservationService.GetReservationById(id);
-            if(existingReservation == null )
-            {
-                Console.WriteLine("Reseration not found in database");
-                return NotFound();
-            }
-
-            Console.WriteLine($"Before Update - Current Status: {existingReservation.Status}");
-            existingReservation.Status = reservation.Status;
-            Console.WriteLine($"After Update - New Status: {existingReservation.Status}");
+            if(Enum.TryParse(status, out Reservation.ReservationStatus parsedStatus))
+                {
+                    reservation.Status = parsedStatus;
+                }
+                else
+                {
+                    TempData["Error"] = "Invalida reservation stratus";
+                    return View(reservation);
+                }
+            
 
             try
             {
-                _unitOfWork.ReservationService.UpdateReservation(existingReservation);
+                _unitOfWork.ReservationService.UpdateReservation(reservation);
                 _unitOfWork.SaveChanges();
 
                 return RedirectToAction("Index");
@@ -317,20 +336,28 @@ namespace BasicTouristAgency.Controllers
             catch (Exception)
             {
 
-                ModelState.AddModelError("", "Error updating reservation.");
+                TempData["Error"]= "Error updating reservation.";
+                return RedirectToAction("Index", "Reservations");
             }
 
-            return View(reservation);
+            
         }
 
         [HttpGet]
         [Authorize(Roles ="Admin")]
         public IActionResult Delete(int id)
         {
+            if (id <= 0)
+            {
+                TempData["Error"] = "Reservation id not found";
+                return RedirectToAction("NotFound", "Home");
+            }
+
             Reservation reservation = _unitOfWork.ReservationService.GetReservationById(id);
             if (reservation == null)
             {
-                return NotFound();
+                TempData["Error"] = "Reservation  not found";
+                return RedirectToAction("NotFound", "Home");
             }
 
             return View(reservation);
@@ -345,27 +372,35 @@ namespace BasicTouristAgency.Controllers
         {
             try
             {
+                if(id <= 0)
+                {
+                    TempData["Error"] = "Rezevation id not found";
+                    return RedirectToAction("NotFound", "Home");
+                }
+
                 Reservation reservation = _unitOfWork.ReservationService.GetReservationById(id);
                 if (reservation == null)
                 {
-                    return NotFound();
+                    TempData["Error"] = "Rezevation  not found";
+                    return RedirectToAction("NotFound", "Home");
                 }
 
                 _unitOfWork.ReservationService.DeleteReservation(id);
                 _unitOfWork.SaveChanges();
 
-                return RedirectToAction("Index", new { message = "Reservation succesfuli deleted" });
+                TempData["Success"] = "Reservation succesfuli deleted";
+                return RedirectToAction("Index", "Reservation");
             }
             catch (Exception ex)
             {
-                ViewBag.ErrorMessage = "An error occured while deleting the reservation";
-                return RedirectToAction("Index", new { message = "Failed to delete reservation" });
+                TempData["Error"] = "An error occured while deleting the reservation";
+                return RedirectToAction("Index", "Reservation");
 
             }
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles ="Admin,Tourist")]
         public async Task<IActionResult> MyReservations(string vacationName, string status, int page =1 )
         {
             var currentUser = await _userManager.GetUserAsync(User);

@@ -18,7 +18,7 @@ namespace BasicTouristAgency.Services
 
         public Reservation GetReservationByUserId(string userId);
 
-        Task<bool> CanUserReserveVacation(string userId, int vacationId);
+        Task<bool> AlredyUserReservedThisVacation(string userId, int vacationId);
 
         public IEnumerable<Reservation> GetFilteredMyReservations(string userId, string vacationName, string status);
 
